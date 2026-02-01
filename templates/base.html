@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Silent Library{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #8a2062;
+            --secondary-color: #1d386a;
+            --accent-color: #d0a4b9;
+            --dark-purple: #973974;
+            --light-bg: #f8f9fa;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--light-bg);
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            background-color: var(--primary-color) !important;
+            padding: 0.8rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand:hover {
+            color: var(--accent-color) !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 4px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white !important;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 15%;
+            width: 70%;
+            height: 3px;
+            background-color: white;
+            border-radius: 2px;
+        }
+        
+        /* User greeting for authenticated users */
+        .user-greeting {
+            color: rgba(255, 255, 255, 0.9);
+            margin-right: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-greeting i {
+            margin-right: 8px;
+            color: var(--accent-color);
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--dark-purple);
+            border-color: var(--dark-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(138, 32, 98, 0.3);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Footer - Reduced Padding */
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            margin-top: auto;
+            padding: 1.5rem 0;
+            border-top: 3px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 12px;
+            margin-top: 0.8rem;
+        }
+        
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .social-icon:hover {
+            background-color: white;
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .contact-info p {
+            margin-bottom: 0.6rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            line-height: 1.3;
+        }
+        
+        .contact-info strong {
+            color: white;
+            font-weight: 600;
+            display: inline-block;
+            width: 65px;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.85rem;
+            padding: 0.2rem 0.4rem;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .connect-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+        
+        /* Copyright Section */
+        .copyright-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .copyright-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.8rem;
+            line-height: 1.2;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+            min-height: calc(100vh - 56px - 200px); /* Adjust based on navbar and footer height */
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Library Icon */
+        .library-icon {
+            color: white;
+            font-size: 1.8rem;
+            margin-right: 10px;
+            transition: color 0.3s;
+        }
+        
+        .logo-container:hover .library-icon {
+            color: var(--accent-color);
+        }
+        
+        /* Cards */
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);
+            color: white;
+        }
+        
+        .alert-custom {
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0.375rem;
+        }
+        
+        .alert-success {
+            border-left-color: var(--success-color);
+        }
+        
+        .alert-danger {
+            border-left-color: var(--danger-color);
+        }
+        
+        .alert-warning {
+            border-left-color: #ffc107;
+        }
+        
+        .alert-info {
+            border-left-color: #17a2b8;
+        }
+        
+        /* Message styles */
+        .messages-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1050;
+            max-width: 350px;
+        }
+        
+        .message-alert {
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer .row > div {
+                margin-bottom: 1.5rem;
+                text-align: center;
+            }
+            
+            .social-icons {
+                justify-content: center;
+            }
+            
+            .footer-links {
+                justify-content: center;
+            }
+            
+            .contact-info p {
+                text-align: center;
+            }
+            
+            .contact-info strong {
+                width: 60px;
+            }
+            
+            .copyright-text {
+                font-size: 0.9rem;
+            }
+            
+            .user-greeting {
+                display: none; /* Hide on mobile to save space */
+            }
+            
+            .messages-container {
+                top: 60px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+            
+            .main-content {
+                padding: 1rem 0;
+            }
+            
+            .nav-link.active::after {
+                display: none; /* Hide underline on mobile */
+            }
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--accent-color);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <div class="logo-container">
+                <i class="fas fa-book-reader library-icon"></i>
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    Silent Library
+                </a>
+            </div>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- Home for all users -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' or 'home' in request.path %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+                    
+                    <!-- Books for all users -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'books' in request.path or 'book' in request.path %}active{% endif %}" href="{% url 'book_list' %}">
+                            <i class="fas fa-book me-1"></i> Books
+                        </a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <!-- Profile for authenticated users -->
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'profile' in request.path %}active{% endif %}" href="{% url 'profile' %}">
+                                <i class="fas fa-user me-1"></i> Profile
+                            </a>
+                        </li>
+                        
+                        <!-- Dashboard for admin users -->
+                        {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'admin' in request.path or 'dashboard' in request.path %}active{% endif %}" href="{% url 'user_dashboard' %}">
+                                <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                
+                <div class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <!-- User greeting -->
+                        <div class="user-greeting d-none d-lg-flex">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Hello, {{ user.first_name|default:user.username }}</span>
+                        </div>
+                        
+                        <!-- Logout for authenticated users -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <!-- Register and Login for unauthenticated users -->
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'register' in request.path %}active{% endif %}" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus me-1"></i> Register
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'login' in request.path %}active{% endif %}" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        </li>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Fixed position messages (for better UX) -->
+            <div class="messages-container">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show alert-custom message-alert mb-2" role="alert">
+                            <div class="d-flex align-items-center">
+                                {% if message.tags == 'success' %}
+                                    <i class="fas fa-check-circle me-2"></i>
+                                {% elif message.tags == 'error' %}
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                {% elif message.tags == 'info' %}
+                                    <i class="fas fa-info-circle me-2"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle me-2"></i>
+                                {% endif %}
+                                <div>{{ message }}</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <!-- Page specific content -->
+            {% block content %}
+            <!-- Content will be injected here -->
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer with Reduced Padding -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <!-- Left Column: Contact Information -->
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <h5><i class="fas fa-address-book me-2"></i>Contact Information</h5>
+                    <div class="contact-info">
+                        <p><strong>Address:</strong> 123 Main Street, Anytown, CA 12345</p>
+                        <p><strong>Phone:</strong> (555) 555-5555</p>
+                        <p><strong>Email:</strong> silentlibrary@example.com</p>
+                    </div>
+                </div>
+                
+                <!-- Center Column: Copyright and Links -->
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <div class="copyright-section">
+                        <div class="copyright-text">
+                            <i class="fas fa-copyright me-1"></i> {% now "Y" %} Silent Library. All Rights Reserved
+                        </div>
+                        
+                        <div class="footer-links">
+                            <a href="#"><i class="fas fa-lock me-1"></i> Privacy Policy</a>
+                            <a href="#"><i class="fas fa-file-contract me-1"></i> Terms of Service</a>
+                            <a href="#"><i class="fas fa-question-circle me-1"></i> FAQ</a>
+                            <a href="#"><i class="fas fa-sitemap me-1"></i> Sitemap</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column: Connect With Us -->
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <h5><i class="fas fa-share-alt me-2"></i>Connect With Us</h5>
+                    <p class="connect-text">
+                        Follow Silent Library on social media for the latest updates, new book arrivals, literary events, and exclusive content.
+                    </p>
+                    
+                    <div class="social-icons">
+                        <a href="#" class="social-icon" title="Facebook" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Twitter" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Instagram" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="LinkedIn" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="YouTube" aria-label="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Newsletter Signup -->
+                    <div class="mt-4">
+                        <p class="small mb-2">Subscribe to our newsletter</p>
+                        <form class="d-flex">
+                            <input type="email" class="form-control form-control-sm me-2" placeholder="Your email" aria-label="Email for newsletter">
+                            <button class="btn btn-sm btn-outline-light" type="submit">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Row: Library Hours -->
+            <div class="row mt-4 pt-3 border-top border-white border-opacity-10">
+                <div class="col-12 text-center">
+                    <p class="small mb-0">
+                        <i class="fas fa-clock me-1"></i> Library Hours: Mon-Fri 9AM-8PM | Sat 10AM-6PM | Sun 12PM-5PM
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Show loading spinner on form submissions and link clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const forms = document.querySelectorAll('form');
+            const navLinks = document.querySelectorAll('.nav-link:not([href="#"])');
+            
+            // Auto-dismiss alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+            
+            // Show spinner on form submission
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    if (this.checkValidity()) {
+                        loadingSpinner.style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Show spinner on navigation (except for current page or dropdowns)
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.href && this.href !== window.location.href) {
+                        loadingSpinner.style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Hide spinner when page is fully loaded
+            window.addEventListener('load', function() {
+                loadingSpinner.style.display = 'none';
+            });
+            
+            // Hide spinner if there's an error (page not fully loaded but spinner still showing)
+            setTimeout(() => {
+                loadingSpinner.style.display = 'none';
+            }, 5000);
+            
+            // Form validation styling
+            const formsToValidate = document.querySelectorAll('form[novalidate]');
+            formsToValidate.forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    if (!this.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    this.classList.add('was-validated');
+                }, false);
+            });
+        });
+        
+        // Helper function to show toast messages
+        function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.messages-container') || document.body;
+            const toastId = 'toast-' + Date.now();
+            
+            const toastHTML = `
+                <div id="${toastId}" class="alert alert-${type} alert-dismissible fade show alert-custom message-alert mb-2" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                        <div>${message}</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('afterbegin', toastHTML);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                const toastElement = document.getElementById(toastId);
+                if (toastElement) {
+                    const bsAlert = new bootstrap.Alert(toastElement);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

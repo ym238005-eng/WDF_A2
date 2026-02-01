@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Silent Library{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <!-- Profile Picture Card -->
+        <div class="card shadow mb-4 border-0">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, #8a2062 0%, #b36c8e 100%); color: white;">
+                <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Profile Overview</h4>
+            </div>
+            <div class="card-body text-center p-4">
+                <div class="position-relative mx-auto mb-4" style="width: 200px; height: 200px;">
+                    {% if profile.profile_pic %}
+                        <img src="{{ profile.profile_pic.url }}" alt="Profile Picture" 
+                             class="rounded-circle img-thumbnail border-4 border-white shadow" 
+                             style="width: 100%; height: 100%; object-fit: cover; border-width: 4px !important;">
+                        <div class="position-absolute bottom-0 end-0">
+                            <span class="badge rounded-circle p-2" style="background-color: #1d386a;">
+                                <i class="fas fa-camera"></i>
+                            </span>
+                        </div>
+                    {% else %}
+                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                             style="width: 100%; height: 100%; background: linear-gradient(135deg, #8a2062 0%, #b36c8e 100%);">
+                            <i class="fas fa-user fa-6x text-white"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <h3 class="card-title fw-bold mb-2" style="color: #1d386a;">{{ user.username }}</h3>
+                <p class="text-muted mb-3">
+                    <i class="fas fa-user me-1"></i>{{ user.first_name }} {{ user.last_name }}
+                </p>
+                
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <span class="badge rounded-pill px-3 py-2" 
+                          style="background-color: #1d386a; color: white;">
+                        <i class="fas fa-user-tag me-1"></i>
+                        {% if user.is_superuser %}
+                            Administrator
+                        {% elif user.is_staff %}
+                            Library Staff
+                        {% else %}
+                            Member
+                        {% endif %}
+                    </span>
+                    
+                    <span class="badge rounded-pill px-3 py-2" 
+                          style="background-color: #bd974c; color: white;">
+                        <i class="fas fa-calendar-alt me-1"></i>
+                        Member since {{ user.date_joined|date:"M Y" }}
+                    </span>
+                </div>
+                
+                <div class="text-start">
+                    <h6 class="fw-semibold mb-2" style="color: #8a2062;">
+                        <i class="fas fa-info-circle me-2"></i>About
+                    </h6>
+                    <p class="text-muted small mb-0">
+                        {% if profile.bio %}
+                            {{ profile.bio|truncatewords:30 }}
+                        {% else %}
+                            No bio added yet. Tell us about yourself!
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Card -->
+        <div class="card shadow border-0">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, #1d386a 0%, #2a4a8a 100%);">
+                <h4 class="mb-0 text-white"><i class="fas fa-chart-line me-2"></i>Reading Statistics</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="text-center p-3 rounded-3" 
+                             style="background: linear-gradient(135deg, rgba(138, 32, 98, 0.1) 0%, rgba(179, 108, 142, 0.1) 100%);">
+                            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" 
+                                 style="width: 50px; height: 50px; background-color: #8a2062;">
+                                <i class="fas fa-book text-white"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1" style="color: #8a2062;">5</h3>
+                            <p class="mb-0 text-muted small">Borrowed</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <div class="text-center p-3 rounded-3" 
+                             style="background: linear-gradient(135deg, rgba(29, 56, 106, 0.1) 0%, rgba(42, 74, 138, 0.1) 100%);">
+                            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" 
+                                 style="width: 50px; height: 50px; background-color: #1d386a;">
+                                <i class="fas fa-star text-white"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1" style="color: #1d386a;">12</h3>
+                            <p class="mb-0 text-muted small">Reviews</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <div class="text-center p-3 rounded-3" 
+                             style="background: linear-gradient(135deg, rgba(189, 151, 76, 0.1) 0%, rgba(212, 177, 109, 0.1) 100%);">
+                            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" 
+                                 style="width: 50px; height: 50px; background-color: #bd974c;">
+                                <i class="fas fa-book-open text-white"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1" style="color: #bd974c;">3</h3>
+                            <p class="mb-0 text-muted small">Reading Now</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <div class="text-center p-3 rounded-3" 
+                             style="background: linear-gradient(135deg, rgba(179, 108, 142, 0.1) 0%, rgba(201, 132, 168, 0.1) 100%);">
+                            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" 
+                                 style="width: 50px; height: 50px; background-color: #b36c8e;">
+                                <i class="fas fa-heart text-white"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1" style="color: #b36c8e;">8</h3>
+                            <p class="mb-0 text-muted small">Wishlist</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <!-- Edit Profile Card -->
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, #8a2062 0%, #b36c8e 100%);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 text-white"><i class="fas fa-user-edit me-2"></i>Edit Profile</h4>
+                    <span class="badge bg-light text-dark">Update your information</span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center mb-4" 
+                                 role="alert" style="border-left: 4px solid {% if message.tags == 'success' %}#28a745{% else %}#dc3545{% endif %};">
+                                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-3 fa-lg"></i>
+                                <div class="flex-grow-1">{{ message }}</div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Account Information -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3" style="color: #1d386a; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+                            <i class="fas fa-user-lock me-2"></i>Account Information
+                        </h5>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="color: #1d386a;">
+                                    <i class="fas fa-user me-1"></i> Username
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background-color: #f8f9fa; color: #8a2062;">
+                                        <i class="fas fa-at"></i>
+                                    </span>
+                                    <input type="text" class="form-control bg-light" value="{{ user.username }}" readonly>
+                                </div>
+                                <small class="text-muted">Your unique identifier</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="color: #1d386a;">
+                                    <i class="fas fa-envelope me-1"></i> Email Address
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background-color: #f8f9fa; color: #8a2062;">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" class="form-control bg-light" value="{{ user.email }}" readonly>
+                                </div>
+                                <small class="text-muted">Used for notifications</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Personal Details -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3" style="color: #1d386a; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+                            <i class="fas fa-address-card me-2"></i>Personal Details
+                        </h5>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label fw-semibold" style="color: #1d386a;">
+                                    <i class="fas fa-signature me-1"></i> First Name
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background-color: #f8f9fa; color: #8a2062;">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                                           value="{{ user.first_name|default:'' }}" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label fw-semibold" style="color: #1d386a;">
+                                    <i class="fas fa-signature me-1"></i> Last Name
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background-color: #f8f9fa; color: #8a2062;">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                                           value="{{ user.last_name|default:'' }}" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bio Section -->
+                    <div class="mb-4">
+                        <label for="bio" class="form-label fw-semibold" style="color: #1d386a;">
+                            <i class="fas fa-edit me-1"></i> Personal Bio
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background-color: #f8f9fa; color: #8a2062;">
+                                <i class="fas fa-quote-left"></i>
+                            </span>
+                            <textarea class="form-control" id="bio" name="bio" rows="4" 
+                                      placeholder="Share your reading journey, favorite genres, authors, or what you're currently reading...">{{ profile.bio|default:'' }}</textarea>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">Tell us about your reading interests</small>
+                            <small class="text-muted" id="bio-counter">{{ profile.bio|length|default:0 }}/500 characters</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Picture Section -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3" style="color: #1d386a; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+                            <i class="fas fa-camera me-2"></i>Profile Picture
+                        </h5>
+                        
+                        <div class="row align-items-center g-3">
+                            <div class="col-md-8">
+                                <label for="profile_pic" class="form-label fw-semibold" style="color: #1d386a;">
+                                    Upload New Picture
+                                </label>
+                                <input type="file" class="form-control" id="profile_pic" name="profile_pic" accept="image/*">
+                                <small class="text-muted">Supported formats: JPG, PNG, GIF • Max size: 5MB</small>
+                                
+                                {% if profile.profile_pic %}
+                                <div class="form-check mt-3">
+                                    <input class="form-check-input" type="checkbox" id="remove_picture" name="remove_picture" value="true">
+                                    <label class="form-check-label text-muted" for="remove_picture">
+                                        <i class="fas fa-trash-alt me-1"></i> Remove current profile picture
+                                    </label>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 text-center">
+                                {% if profile.profile_pic %}
+                                <div class="position-relative d-inline-block">
+                                    <img src="{{ profile.profile_pic.url }}" alt="Current" 
+                                         class="rounded-circle img-thumbnail border-3" 
+                                         style="width: 100px; height: 100px; object-fit: cover; border-color: #8a2062 !important;">
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <div>
+                            <button type="submit" class="btn btn-primary px-4 py-2">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary px-4 py-2 ms-2">
+                                <i class="fas fa-undo me-2"></i>Reset
+                            </button>
+                        </div>
+                        
+                        <div>
+                            <!-- Password reset link (to be implemented later) -->
+                            <a href="#" class="btn btn-outline-primary px-4 py-2" 
+                               style="border-color: #1d386a; color: #1d386a;">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Bio character counter
+    const bioTextarea = document.getElementById('bio');
+    const bioCounter = document.getElementById('bio-counter');
+    
+    if (bioTextarea && bioCounter) {
+        function updateBioCounter() {
+            const currentLength = bioTextarea.value.length;
+            const maxLength = 500;
+            bioCounter.textContent = `${currentLength}/${maxLength} characters`;
+            
+            if (currentLength > maxLength) {
+                bioTextarea.style.borderColor = '#dc3545';
+                bioCounter.style.color = '#dc3545';
+            } else if (currentLength > maxLength * 0.9) {
+                bioCounter.style.color = '#dc3545';
+                bioTextarea.style.borderColor = '#ffc107';
+            } else if (currentLength > maxLength * 0.75) {
+                bioCounter.style.color = '#ffc107';
+                bioTextarea.style.borderColor = '#17a2b8';
+            } else {
+                bioCounter.style.color = '#6c757d';
+                bioTextarea.style.borderColor = '#28a745';
+            }
+        }
+        
+        // Update counter on load
+        updateBioCounter();
+        
+        // Update counter on input
+        bioTextarea.addEventListener('input', updateBioCounter);
+    }
+    
+    // Profile picture file size validation
+    const profilePicInput = document.getElementById('profile_pic');
+    if (profilePicInput) {
+        profilePicInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
+            if (file && file.size > maxSize) {
+                alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                this.value = '';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

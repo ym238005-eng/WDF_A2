@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Book</title>
+</head>
+<body>
+
+<h2>Update Book: {{ book.title }}</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    {% if book.cover_pic %}
+        <p>Current Cover:</p>
+        <img src="{{ book.cover_pic.url }}" width="120">
+    {% endif %}
+
+    <br>
+    <button type="submit">Update Book</button>
+</form>
+
+<a href="{% url 'book_list' %}">Back to list</a>
+
+</body>
+</html>

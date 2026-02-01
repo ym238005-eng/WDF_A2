@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New User - SilentLibrary{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-lg-6 col-md-8">
+        <div class="card shadow-sm border-0" style="border-radius: 20px; overflow: hidden;">
+            
+            <div class="card-header p-4 text-center border-0" style="background-color: var(--primary-color);">
+                <i class="bi bi-person-plus text-white fs-1"></i>
+                <h2 class="fw-bold mb-0 text-white">Add New User</h2>
+                <p class="small text-white opacity-75 mb-0">Register a new member or staff to the library</p>
+            </div>
+
+            <div class="card-body p-4 p-lg-5 bg-white">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger rounded-pill px-4 border-0 shadow-sm mb-4">
+                            <i class="bi bi-exclamation-circle me-2"></i>Please check the requirements below.
+                        </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        {% for field in form %}
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-bold small text-uppercase" style="color: var(--primary-color);">
+                                    {{ field.label }}
+                                </label>
+                                
+                                {{ field }}
+                                
+                                {% if field.help_text %}
+                                    <div class="form-text small text-muted">{{ field.help_text }}</div>
+                                {% endif %}
+                                
+                                {% for error in field.errors %}
+                                    <div class="text-danger small mt-1 fw-bold">
+                                        <i class="bi bi-x-circle me-1"></i>{{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <hr class="my-4 opacity-25">
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'user_dashboard' %}" class="btn btn-light px-4 rounded-pill text-muted fw-bold">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn-primary-custom px-5 shadow-sm">
+                            <i class="bi bi-person-check me-2"></i>Create Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom CSS to style Django's auto-generated UserCreationForm fields */
+    input[type="text"], 
+    input[type="password"], 
+    input[type="email"],
+    textarea, 
+    select {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #333;
+        background-color: #fcfcfc;
+        border: 2px solid #eee;
+        border-radius: 15px; /* Matches your rounded theme */
+        transition: all .2s ease-in-out;
+    }
+
+    /* Focus state using the Primary Color #1A3E6B */
+    input:focus, textarea:focus, select:focus {
+        background-color: #fff;
+        border-color: var(--primary-color);
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(26, 62, 107, 0.1);
+    }
+
+    /* Hide the default Django list formatting for help text if it appears as a <ul> */
+    ul.errorlist {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+
+{% block title %}Book Collection - Silent Library{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Add hover effect for clickable book details */
+    .book-clickable {
+        cursor: pointer;
+    }
+    
+    .book-clickable:hover {
+        background-color: rgba(138, 32, 98, 0.05) !important;
+    }
+    
+    .book-cover-container {
+        width: 60px;
+        height: 85px;
+        overflow: hidden;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .book-cover-container img {
+        transition: transform 0.3s ease;
+    }
+    
+    .book-cover-container:hover img {
+        transform: scale(1.05);
+    }
+    
+    .modal-header {
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+    
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        color: var(--secondary-color);
+    }
+    
+    .table td {
+        vertical-align: middle;
+        border-top: 1px solid #f0f0f0;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(138, 32, 98, 0.05);
+        transition: all 0.2s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6 fw-bold" style="color: var(--primary-color);">
+            <i class="fas fa-book me-2"></i>Book Collection
+        </h1>
+        
+        {% if user.is_superuser or user.is_staff %}
+        <a href="{% url 'book_create' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus-circle me-2"></i>Add New Book
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Search Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+            <h5 class="text-white mb-0">
+                <i class="fas fa-search me-2"></i>Search Books
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{% url 'book_list' %}" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               name="search" 
+                               placeholder="Search books by title, author, genre, etc..." 
+                               value="{{ search_query }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="search_by">
+                        <option value="title" {% if search_by == 'title' %}selected{% endif %}>Title</option>
+                        <option value="author" {% if search_by == 'author' %}selected{% endif %}>Author</option>
+                        <option value="genre" {% if search_by == 'genre' %}selected{% endif %}>Genre</option>
+                        <option value="category" {% if search_by == 'category' %}selected{% endif %}>Category</option>
+                        <option value="isbn" {% if search_by == 'isbn' %}selected{% endif %}>ISBN</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Search
+                    </button>
+                </div>
+            </form>
+            
+            {% if search_query %}
+            <div class="mt-3">
+                <p class="mb-0">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>
+                    Found <strong>{{ books|length }}</strong> book(s) matching "<strong>{{ search_query }}</strong>" in <strong>{{ search_by }}</strong>
+                    <a href="{% url 'book_list' %}" class="btn btn-sm btn-outline-secondary ms-3">
+                        <i class="fas fa-times me-1"></i>Clear Search
+                    </a>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+
+
+    <div class="card shadow-sm">
+        <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+            <h5 class="text-white mb-0">
+                <i class="fas fa-books me-2"></i>Books List ({{ books|length }} books)
+            </h5>
+        </div>
+        
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">Cover</th>
+                            <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">Book Details</th>
+                            <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">Category</th>
+                            <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">Published Date</th>
+                            <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">ISBN</th>
+                            <th class="py-3 text-center text-uppercase small fw-bold" style="color: var(--secondary-color);">Availability</th>
+                            
+                            {% if user.is_superuser or user.is_staff %}
+                            <th class="py-3 text-end pe-4 text-uppercase small fw-bold" style="color: var(--secondary-color);">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <!-- Cover Image with Click to View Details -->
+                            <td class="ps-4 book-clickable" data-bs-toggle="modal" data-bs-target="#viewModal{{ book.id }}">
+                                <div class="book-cover-container">
+                                    {% if book.cover_pic %}
+                                        <img src="{{ book.cover_pic.url }}" 
+                                             alt="{{ book.title }}" 
+                                             class="rounded shadow-sm" 
+                                             style="width: 60px; height: 85px; object-fit: cover; border: 1px solid #eee;">
+                                    {% else %}
+                                        <div class="bg-light text-muted d-flex align-items-center justify-content-center rounded border" 
+                                             style="width: 60px; height: 85px; font-size: 0.7rem;">
+                                            <i class="fas fa-image small"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Book Details with Click to View Details -->
+                            <td class="book-clickable" data-bs-toggle="modal" data-bs-target="#viewModal{{ book.id }}">
+                                <div class="fw-bold mb-1" style="color: var(--primary-color);">{{ book.title }}</div>
+                                <div class="text-muted small">
+                                    <i class="fas fa-user-pen me-1"></i>{{ book.author }}
+                                </div>
+                                <div class="text-muted small text-truncate" style="max-width: 200px; opacity: 0.8;">
+                                    <i class="fas fa-file-lines me-1"></i>{{ book.description|truncatechars:50 }}
+                                </div>
+                            </td>
+                            
+                            <!-- Category -->
+                            <td>
+                                <span class="badge rounded-pill fw-normal px-3 py-2" 
+                                      style="background-color: var(--accent-color); color: var(--secondary-color);">
+                                    {{ book.category }}
+                                </span>
+                            </td>
+                            
+                            <!-- Published Date -->
+                            <td>
+                                <small>
+                                    <i class="fas fa-calendar me-1 text-muted"></i>
+                                    {{ book.published_date|date:"F j, Y" }}
+                                </small>
+                            </td>
+                            
+                            <!-- ISBN -->
+                            <td>
+                                <code class="text-muted small">{{ book.isbn }}</code>
+                            </td>
+                            
+                            <!-- Availability -->
+                            <td class="text-center">
+                                {% if book.available_copies > 0 %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+                                        <i class="fas fa-check-circle me-1"></i>{{ book.available_copies }} Available
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2">
+                                        <i class="fas fa-times-circle me-1"></i>Out of Stock
+                                    </span>
+                                {% endif %}
+                            </td>
+                            
+                            <!-- Actions (for admin/staff only) -->
+                            {% if user.is_superuser or user.is_staff %}
+                            <td class="text-end pe-4">
+                                <div class="btn-group" role="group">
+                                    <!-- Update Button -->
+                                    <a href="{% url 'book_update' book.id %}" 
+                                       class="btn btn-outline-warning btn-sm" 
+                                       title="Edit Book">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    
+                                    <!-- Delete Button with Modal Trigger -->
+                                    <button type="button" 
+                                            class="btn btn-outline-danger btn-sm" 
+                                            title="Delete Book"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal{{ book.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{% if user.is_superuser or user.is_staff %}7{% else %}6{% endif %}" class="text-center py-5 text-muted">
+                                <i class="fas fa-book-open display-4 d-block mb-3 opacity-25"></i>
+                                <h5>No books found in the library</h5>
+                                <p class="mb-0">Add your first book to start building the collection.</p>
+                                <a href="{% url 'book_create' %}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-plus-circle me-2"></i>Add First Book
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals for Book Details -->
+{% for book in books %}
+<div class="modal fade" id="viewModal{{ book.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ book.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+                <h5 class="modal-title text-white" id="viewModalLabel{{ book.id }}">
+                    <i class="fas fa-book me-2"></i>Book Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Book Cover -->
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="text-center">
+                            {% if book.cover_pic %}
+                                <img src="{{ book.cover_pic.url }}" 
+                                     alt="{{ book.title }}" 
+                                     class="img-fluid rounded shadow-lg mb-3"
+                                     style="max-height: 300px; object-fit: cover; border: 3px solid #f0f0f0;">
+                            {% else %}
+                                <div class="bg-light text-muted d-flex align-items-center justify-content-center rounded border p-5 mb-3"
+                                     style="height: 250px;">
+                                    <i class="fas fa-book fa-4x opacity-25"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Book Information -->
+                    <div class="col-md-8">
+                        <h4 class="fw-bold mb-2" style="color: var(--primary-color);">{{ book.title }}</h4>
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-user-pen me-2"></i><strong>Author:</strong> {{ book.author }}
+                        </p>
+                        
+                        <div class="mb-3">
+                            <h6 class="fw-bold" style="color: var(--secondary-color);">Description:</h6>
+                            <p class="text-muted">{{ book.description|default:"No description available." }}</p>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <span class="badge rounded-pill fw-normal px-3 py-2 d-inline-flex align-items-center"
+                                      style="background-color: var(--accent-color); color: var(--secondary-color);">
+                                    <i class="fas fa-tag me-2"></i>{{ book.category }}
+                                </span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <p class="mb-1">
+                                    <i class="fas fa-barcode me-2 text-muted"></i>
+                                    <strong>ISBN:</strong> <code>{{ book.isbn }}</code>
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <p class="mb-1">
+                                    <i class="fas fa-calendar me-2 text-muted"></i>
+                                    <strong>Published:</strong> {{ book.published_date|date:"F j, Y" }}
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <p class="mb-1">
+                                    <i class="fas fa-copy me-2 text-muted"></i>
+                                    <strong>Available Copies:</strong> 
+                                    {% if book.available_copies > 0 %}
+                                        <span class="text-success">{{ book.available_copies }}</span>
+                                    {% else %}
+                                        <span class="text-danger">Out of Stock</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Close
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Library
+                </button>
+                {% if user.is_superuser or user.is_staff %}
+                <a href="{% url 'book_update' book.id %}" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i>Edit Book
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modals for Delete Confirmation -->
+{% for book in books %}
+{% if user.is_superuser or user.is_staff %}
+<div class="modal fade" id="deleteModal{{ book.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ book.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="deleteModalLabel{{ book.id }}" style="color: var(--primary-color);">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                    Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the book:</p>
+                <h6 class="fw-bold" style="color: var(--primary-color);">"{{ book.title }}"</h6>
+                <p class="text-muted mb-0">
+                    <small>by {{ book.author }}</small>
+                </p>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    This action cannot be undone. All data related to this book will be permanently deleted.
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <form action="{% url 'delete_book' book.id %}" method="POST" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Delete Book
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle broken images
+    const bookImages = document.querySelectorAll('.book-cover-container img');
+    bookImages.forEach(img => {
+        img.addEventListener('error', function() {
+            this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='85' viewBox='0 0 60 85'%3E%3Crect width='60' height='85' fill='%23f8f9fa'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' fill='%236c757d' text-anchor='middle' dy='.3em'%3ENo Cover%3C/text%3E%3C/svg%3E";
+        });
+    });
+});
+</script>

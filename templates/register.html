@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Silent Library{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="text-center mb-0"><i class="fas fa-user-plus me-2"></i>Create Your Account</h3>
+            </div>
+            <div class="card-body p-4">
+                <!-- Display messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data" id="registrationForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Username Field -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Username *</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="{{ username|default:'' }}" required
+                                   pattern=".{3,}"
+                                   title="Username must be at least 3 characters">
+                            <div class="form-text">Choose a unique username (min. 3 characters)</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ email|default:'' }}" required>
+                            <div class="form-text">We'll send confirmation to this email</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Name Fields -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" 
+                                   value="{{ first_name|default:'' }}" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" 
+                                   value="{{ last_name|default:'' }}" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Password Fields -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password *</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   minlength="6" required>
+                            <div class="form-text">Minimum 6 characters</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="password_confirm" class="form-label">Confirm Password *</label>
+                            <input type="password" class="form-control" id="password_confirm" name="password_confirm" 
+                                   minlength="6" required>
+                            <div class="form-text">Re-enter your password</div>
+                            <div id="password-match" class="form-text d-none">
+                                <i class="fas fa-check text-success"></i> Passwords match
+                            </div>
+                            <div id="password-mismatch" class="form-text d-none">
+                                <i class="fas fa-times text-danger"></i> Passwords don't match
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Picture -->
+                    <div class="mb-4">
+                        <label for="profile_picture" class="form-label">Profile Picture (Optional)</label>
+                        <input type="file" class="form-control" id="profile_picture" name="profile_picture" 
+                               accept="image/*" onchange="previewImage(event)">
+                        <div class="form-text">Upload a profile picture (JPG, PNG, GIF - max 5MB)</div>
+                        <div id="image-preview" class="mt-2 d-none">
+                            <img id="preview" src="#" alt="Preview" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Bio -->
+                    <div class="mb-4">
+                        <label for="bio" class="form-label">Bio (Optional)</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="3" 
+                                  placeholder="Tell us a little about yourself...">{{ bio|default:'' }}</textarea>
+                        <div class="form-text">Max 500 characters</div>
+                        <div class="text-end">
+                            <small><span id="char-count">0</span>/500</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms and Conditions -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#" class="text-decoration-none" style="color: #8a2062;">Terms and Conditions</a> 
+                                and <a href="#" class="text-decoration-none" style="color: #8a2062;">Privacy Policy</a> *
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-check me-2"></i>Create Account
+                        </button>
+                    </div>
+                    
+                    <!-- Login Link -->
+                    <div class="text-center mt-4">
+                        <p>Already have an account? <a href="{% url 'login' %}" class="text-decoration-none" style="color: #8a2062;">Login here</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Benefits Card -->
+        <div class="card mt-4 border-0" style="background-color: #f8f9fa;">
+            <div class="card-body">
+                <h5 class="card-title" style="color: #1d386a;"><i class="fas fa-info-circle me-2"></i>Registration Benefits</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i> Borrow books from our extensive collection</li>
+                    <li><i class="fas fa-check text-success me-2"></i> Rate and review books you've read</li>
+                    <li><i class="fas fa-check text-success me-2"></i> Get personalized book recommendations</li>
+                    <li><i class="fas fa-check text-success me-2"></i> Receive notifications about due dates</li>
+                    <li><i class="fas fa-check text-success me-2"></i> Create and manage your reading lists</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Form Validation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registrationForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('password_confirm');
+    const bio = document.getElementById('bio');
+    const charCount = document.getElementById('char-count');
+    const passwordMatch = document.getElementById('password-match');
+    const passwordMismatch = document.getElementById('password-mismatch');
+    
+    // Real-time password matching
+    function checkPasswordMatch() {
+        if (password.value && confirmPassword.value) {
+            if (password.value === confirmPassword.value) {
+                passwordMatch.classList.remove('d-none');
+                passwordMismatch.classList.add('d-none');
+                confirmPassword.classList.remove('is-invalid');
+                confirmPassword.classList.add('is-valid');
+            } else {
+                passwordMatch.classList.add('d-none');
+                passwordMismatch.classList.remove('d-none');
+                confirmPassword.classList.remove('is-valid');
+                confirmPassword.classList.add('is-invalid');
+            }
+        } else {
+            passwordMatch.classList.add('d-none');
+            passwordMismatch.classList.add('d-none');
+        }
+    }
+    
+    password.addEventListener('input', checkPasswordMatch);
+    confirmPassword.addEventListener('input', checkPasswordMatch);
+    
+    // Bio character counter
+    function updateCharCount() {
+        const length = bio.value.length;
+        charCount.textContent = length;
+        
+        if (length > 500) {
+            bio.classList.add('is-invalid');
+            charCount.style.color = '#dc3545';
+        } else {
+            bio.classList.remove('is-invalid');
+            charCount.style.color = length > 450 ? '#ffc107' : '#28a745';
+        }
+    }
+    
+    bio.addEventListener('input', updateCharCount);
+    updateCharCount(); // Initial count
+    
+    // Form validation
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+        
+        // Clear previous validation
+        const inputs = form.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+        
+        // Check required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            }
+        });
+        
+        // Check password match
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Check bio length
+        if (bio.value.length > 500) {
+            bio.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            event.preventDefault();
+            messages.innerHTML = '<div class="alert alert-danger">Please fix the errors in the form.</div>';
+        }
+    });
+});
+
+// Image preview function
+function previewImage(event) {
+    const input = event.target;
+    const preview = document.getElementById('preview');
+    const previewDiv = document.getElementById('image-preview');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Check file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File is too large! Maximum size is 5MB.');
+            input.value = '';
+            previewDiv.classList.add('d-none');
+            return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewDiv.classList.remove('d-none');
+        }
+        
+        reader.readAsDataURL(file);
+    } else {
+        previewDiv.classList.add('d-none');
+    }
+}
+</script>
+{% endblock %}
