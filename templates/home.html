@@ -3,439 +3,15 @@
 
 {% block title %}Home - Silent Library{% endblock %}
 
-{% block content %}
-<!-- Hero Section -->
-<div class="hero-section py-5 mb-5" style="background: linear-gradient(135deg, #8a2062 0%, #b36c8e 100%); border-radius: 15px;">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <div class="text-white p-4">
-                    <h1 class="display-4 fw-bold mb-4">Welcome to Silent Library</h1>
-                    <p class="lead mb-4">Your digital gateway to a world of knowledge, stories, and imagination. Discover, borrow, and explore our extensive collection of books from the comfort of your home.</p>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="{% url 'book_list' %}" class="btn btn-light btn-lg px-4 py-3">
-                            <i class="fas fa-book-open me-2"></i> Browse Our Collection
-                        </a>
-                        {% if not user.is_authenticated %}
-                        <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg px-4 py-3">
-                            <i class="fas fa-user-plus me-2"></i> Join Now
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-5 text-center">
-                <div class="position-relative">
-                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center mx-auto" 
-                         style="width: 300px; height: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                        <i class="fas fa-book-reader fa-8x" style="color: #8a2062;"></i>
-                    </div>
-                    <div class="position-absolute top-0 start-50 translate-middle-x mt-4">
-                        <div class="badge bg-light text-dark p-3 rounded-pill shadow">
-                            <i class="fas fa-star me-1" style="color: #bd974c;"></i>
-                            Over 10,000 Books Available
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Stats -->
-<div class="row mb-5">
-    <div class="col-md-3 col-6 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center p-4">
-                <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
-                     style="width: 80px; height: 80px; background-color: rgba(138, 32, 98, 0.1);">
-                    <i class="fas fa-book fa-3x" style="color: #8a2062;"></i>
-                </div>
-                <h2 class="display-5 fw-bold mb-2" style="color: #8a2062;">10,500+</h2>
-                <p class="card-text text-muted mb-0">Books in Collection</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center p-4">
-                <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
-                     style="width: 80px; height: 80px; background-color: rgba(29, 56, 106, 0.1);">
-                    <i class="fas fa-users fa-3x" style="color: #1d386a;"></i>
-                </div>
-                <h2 class="display-5 fw-bold mb-2" style="color: #1d386a;">5,200+</h2>
-                <p class="card-text text-muted mb-0">Active Members</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center p-4">
-                <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
-                     style="width: 80px; height: 80px; background-color: rgba(189, 151, 76, 0.1);">
-                    <i class="fas fa-book-reader fa-3x" style="color: #bd974c;"></i>
-                </div>
-                <h2 class="display-5 fw-bold mb-2" style="color: #bd974c;">3,800+</h2>
-                <p class="card-text text-muted mb-0">Books Borrowed Monthly</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center p-4">
-                <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
-                     style="width: 80px; height: 80px; background-color: rgba(179, 108, 142, 0.1);">
-                    <i class="fas fa-star fa-3x" style="color: #b36c8e;"></i>
-                </div>
-                <h2 class="display-5 fw-bold mb-2" style="color: #b36c8e;">4.7/5</h2>
-                <p class="card-text text-muted mb-0">Member Satisfaction</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- How It Works -->
-<div class="row mb-5">
-    <div class="col-12 mb-4">
-        <h2 class="text-center fw-bold" style="color: #1d386a;">
-            <i class="fas fa-play-circle me-2"></i>How It Works
-        </h2>
-        <p class="text-center text-muted mb-5">Get started with Silent Library in just a few simple steps</p>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-4">
-        <div class="text-center">
-            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
-                 style="width: 100px; height: 100px; background: linear-gradient(135deg, #8a2062 0%, #b36c8e 100%);">
-                <i class="fas fa-user-plus fa-3x text-white"></i>
-            </div>
-            <h5 class="fw-bold mb-2" style="color: #8a2062;">1. Create Account</h5>
-            <p class="text-muted small">Register for free and get instant access</p>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-4">
-        <div class="text-center">
-            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
-                 style="width: 100px; height: 100px; background: linear-gradient(135deg, #1d386a 0%, #2a4a8a 100%);">
-                <i class="fas fa-search fa-3x text-white"></i>
-            </div>
-            <h5 class="fw-bold mb-2" style="color: #1d386a;">2. Browse Books</h5>
-            <p class="text-muted small">Explore our vast collection by genre, author, or title</p>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-4">
-        <div class="text-center">
-            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
-                 style="width: 100px; height: 100px; background: linear-gradient(135deg, #bd974c 0%, #d4b16d 100%);">
-                <i class="fas fa-book-reader fa-3x text-white"></i>
-            </div>
-            <h5 class="fw-bold mb-2" style="color: #bd974c;">3. Borrow Books</h5>
-            <p class="text-muted small">Reserve and borrow books with one click</p>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-4">
-        <div class="text-center">
-            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
-                 style="width: 100px; height: 100px; background: linear-gradient(135deg, #b36c8e 0%, #c984a8 100%);">
-                <i class="fas fa-heart fa-3x text-white"></i>
-            </div>
-            <h5 class="fw-bold mb-2" style="color: #b36c8e;">4. Enjoy Reading</h5>
-            <p class="text-muted small">Read, rate, and review your borrowed books</p>
-        </div>
-    </div>
-</div>
-
-<!-- Featured Categories -->
-<div class="row mb-5">
-    <div class="col-12 mb-4">
-        <h2 class="fw-bold" style="color: #1d386a;">
-            <i class="fas fa-tags me-2"></i>Popular Categories
-        </h2>
-        <p class="text-muted">Explore books by your favorite genres</p>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-3">
-        <div class="card border-0 shadow-sm h-100 hover-lift">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
-                         style="width: 60px; height: 60px; background-color: rgba(138, 32, 98, 0.1);">
-                        <i class="fas fa-magic fa-2x" style="color: #8a2062;"></i>
-                    </div>
-                    <div>
-                        <h5 class="fw-bold mb-1" style="color: #8a2062;">Fiction</h5>
-                        <p class="text-muted small mb-0">2,500+ books</p>
-                    </div>
-                </div>
-                <p class="card-text text-muted">Explore novels, short stories, and literary works</p>
-                <a href="{% url 'book_list' %}?genre=fiction" class="btn btn-outline-primary btn-sm">
-                    Browse <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-3">
-        <div class="card border-0 shadow-sm h-100 hover-lift">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
-                         style="width: 60px; height: 60px; background-color: rgba(29, 56, 106, 0.1);">
-                        <i class="fas fa-graduation-cap fa-2x" style="color: #1d386a;"></i>
-                    </div>
-                    <div>
-                        <h5 class="fw-bold mb-1" style="color: #1d386a;">Non-Fiction</h5>
-                        <p class="text-muted small mb-0">1,800+ books</p>
-                    </div>
-                </div>
-                <p class="card-text text-muted">Biographies, history, science, and more</p>
-                <a href="{% url 'book_list' %}?genre=non-fiction" class="btn btn-outline-primary btn-sm">
-                    Browse <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-3">
-        <div class="card border-0 shadow-sm h-100 hover-lift">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
-                         style="width: 60px; height: 60px; background-color: rgba(189, 151, 76, 0.1);">
-                        <i class="fas fa-flask fa-2x" style="color: #bd974c;"></i>
-                    </div>
-                    <div>
-                        <h5 class="fw-bold mb-1" style="color: #bd974c;">Science</h5>
-                        <p class="text-muted small mb-0">950+ books</p>
-                    </div>
-                </div>
-                <p class="card-text text-muted">Discover the wonders of science and technology</p>
-                <a href="{% url 'book_list' %}?genre=science" class="btn btn-outline-primary btn-sm">
-                    Browse <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 col-6 mb-3">
-        <div class="card border-0 shadow-sm h-100 hover-lift">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
-                         style="width: 60px; height: 60px; background-color: rgba(179, 108, 142, 0.1);">
-                        <i class="fas fa-dragon fa-2x" style="color: #b36c8e;"></i>
-                    </div>
-                    <div>
-                        <h5 class="fw-bold mb-1" style="color: #b36c8e;">Fantasy</h5>
-                        <p class="text-muted small mb-0">1,200+ books</p>
-                    </div>
-                </div>
-                <p class="card-text text-muted">Journey to magical worlds and epic adventures</p>
-                <a href="{% url 'book_list' %}?genre=fantasy" class="btn btn-outline-primary btn-sm">
-                    Browse <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Testimonials -->
-<div class="row mb-5">
-    <div class="col-12 mb-4">
-        <h2 class="fw-bold text-center" style="color: #1d386a;">
-            <i class="fas fa-comments me-2"></i>What Our Members Say
-        </h2>
-        <p class="text-center text-muted">Hear from our satisfied library members</p>
-    </div>
-    
-    <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle overflow-hidden me-3" style="width: 60px; height: 60px;">
-                        <img src="https://via.placeholder.com/60" alt="User" class="img-fluid">
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1" style="color: #8a2062;">Sarah Johnson</h6>
-                        <div class="small">
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="card-text text-muted">
-                    "Silent Library has transformed my reading habits. The digital borrowing system is so convenient, and the collection is incredible!"
-                </p>
-                <div class="text-muted small">
-                    <i class="fas fa-book me-1"></i> 42 books borrowed
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle overflow-hidden me-3" style="width: 60px; height: 60px;">
-                        <img src="https://via.placeholder.com/60" alt="User" class="img-fluid">
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1" style="color: #1d386a;">Michael Chen</h6>
-                        <div class="small">
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star-half-alt" style="color: #bd974c;"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="card-text text-muted">
-                    "As a student, the variety of academic books available has been invaluable for my research. The reservation system works perfectly!"
-                </p>
-                <div class="text-muted small">
-                    <i class="fas fa-book me-1"></i> 28 books borrowed
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle overflow-hidden me-3" style="width: 60px; height: 60px;">
-                        <img src="https://via.placeholder.com/60" alt="User" class="img-fluid">
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1" style="color: #b36c8e;">Emma Rodriguez</h6>
-                        <div class="small">
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                            <i class="fas fa-star" style="color: #bd974c;"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="card-text text-muted">
-                    "The ability to rate and review books helps me discover new favorites. The community aspect makes reading even more enjoyable!"
-                </p>
-                <div class="text-muted small">
-                    <i class="fas fa-book me-1"></i> 56 books borrowed
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Call to Action -->
-<div class="row">
-    <div class="col-12">
-        <div class="card border-0 shadow" style="background: linear-gradient(135deg, #1d386a 0%, #2a4a8a 100%);">
-            <div class="card-body p-5 text-center text-white">
-                <h2 class="fw-bold mb-4">Ready to Start Your Reading Journey?</h2>
-                <p class="lead mb-4">Join thousands of readers who have discovered the joy of digital library access</p>
-                <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
-                    {% if not user.is_authenticated %}
-                    <a href="{% url 'register' %}" class="btn btn-light btn-lg px-4">
-                        <i class="fas fa-user-plus me-2"></i> Sign Up Free
-                    </a>
-                    {% endif %}
-                    <a href="{% url 'book_list' %}" class="btn btn-outline-light btn-lg px-4">
-                        <i class="fas fa-search me-2"></i> Browse Collection
-                    </a>
-                </div>
-                <p class="mt-4 mb-0 small opacity-75">
-                    <i class="fas fa-check-circle me-1"></i>
-                    No fees • No commitments • Unlimited access
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Latest News/Announcements -->
-<div class="row mt-5">
-    <div class="col-12 mb-4">
-        <h2 class="fw-bold" style="color: #1d386a;">
-            <i class="fas fa-newspaper me-2"></i>Library News & Updates
-        </h2>
-        <p class="text-muted">Stay informed about the latest library happenings</p>
-    </div>
-    
-    <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header border-0" style="background: linear-gradient(135deg, #8a2062 0%, #b36c8e 100%);">
-                <div class="text-white py-2 px-3">
-                    <small><i class="fas fa-calendar me-1"></i> Jan 15, 2026</small>
-                </div>
-            </div>
-            <div class="card-body p-4">
-                <h5 class="fw-bold mb-3" style="color: #8a2062;">New Book Arrivals</h5>
-                <p class="card-text text-muted">
-                    We've added 250+ new books to our collection this month, including the latest bestsellers and award winners.
-                </p>
-                <a href="{% url 'book_list' %}" class="btn btn-outline-primary btn-sm">
-                    Explore New Arrivals
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header border-0" style="background: linear-gradient(135deg, #1d386a 0%, #2a4a8a 100%);">
-                <div class="text-white py-2 px-3">
-                    <small><i class="fas fa-calendar me-1"></i> Jan 10, 2026</small>
-                </div>
-            </div>
-            <div class="card-body p-4">
-                <h5 class="fw-bold mb-3" style="color: #1d386a;">Extended Borrowing Period</h5>
-                <p class="card-text text-muted">
-                    We're now offering 21-day borrowing periods for all members. Enjoy your books for longer!
-                </p>
-                <a href="#" class="btn btn-outline-primary btn-sm">
-                    Learn More
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header border-0" style="background: linear-gradient(135deg, #bd974c 0%, #d4b16d 100%);">
-                <div class="text-white py-2 px-3">
-                    <small><i class="fas fa-calendar me-1"></i> Jan 5, 2026</small>
-                </div>
-            </div>
-            <div class="card-body p-4">
-                <h5 class="fw-bold mb-3" style="color: #bd974c;">Reading Challenge 2026</h5>
-                <p class="card-text text-muted">
-                    Join our annual reading challenge! Set your reading goal and earn badges as you progress.
-                </p>
-                <a href="#" class="btn btn-outline-primary btn-sm">
-                    Join Challenge
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
+{% block extra_css %}
 <style>
+    /* Hero Section */
     .hero-section {
         position: relative;
         overflow: hidden;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);
+        border-radius: 15px;
+        margin-bottom: 4rem;
     }
     
     .hero-section::before {
@@ -445,63 +21,829 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
-        background-size: cover;
-        opacity: 0.1;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.3;
     }
     
-    .hover-lift {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .hero-content {
+        position: relative;
+        z-index: 2;
     }
     
-    .hover-lift:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
-    }
-    
-    .btn-outline-primary {
-        border-color: #8a2062;
-        color: #8a2062;
-    }
-    
-    .btn-outline-primary:hover {
-        background-color: #8a2062;
-        border-color: #8a2062;
-        color: white;
-    }
-    
-    .btn-outline-light:hover {
-        color: #8a2062 !important;
-    }
-    
-    .card {
-        border-radius: 12px;
+    .hero-book {
+        animation: float 6s ease-in-out infinite;
         transition: all 0.3s ease;
     }
     
-    .card-header {
-        border-radius: 12px 12px 0 0 !important;
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
     }
     
-    /* Responsive adjustments */
+    /* Stats Cards */
+    .stat-card {
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .stat-icon {
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1);
+    }
+    
+    /* How It Works */
+    .step-number {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary-color);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 10px rgba(138, 32, 98, 0.3);
+        z-index: 2;
+    }
+    
+    .step-connector {
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-color), var(--dark-purple));
+        z-index: 1;
+    }
+    
+    .step-connector::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    
+    .step-connector::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        background: var(--dark-purple);
+        border-radius: 50%;
+        animation: pulse 2s infinite 0.5s;
+    }
+    
+    /* Category Cards */
+    .category-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .category-icon {
+        transition: all 0.3s ease;
+    }
+    
+    .category-card:hover .category-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    /* Testimonial Cards */
+    .testimonial-card {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .testimonial-card::before {
+        content: '"';
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 120px;
+        font-family: Georgia, serif;
+        color: rgba(138, 32, 98, 0.05);
+        line-height: 1;
+    }
+    
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--accent-color);
+    }
+    
+    /* News Cards */
+    .news-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .news-date {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, #2a4a8a 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+    
+    /* Responsive Design */
     @media (max-width: 768px) {
-        .hero-section .display-4 {
-            font-size: 2.5rem;
+        .hero-section {
+            text-align: center;
         }
         
-        .hero-section .lead {
-            font-size: 1.1rem;
-        }
-        
-        .rounded-circle[style*="width: 300px"] {
+        .hero-book {
             width: 200px !important;
             height: 200px !important;
+            margin-top: 2rem;
         }
         
-        .fa-8x {
-            font-size: 5rem;
+        .step-connector {
+            display: none;
+        }
+        
+        .stat-card, .category-card, .testimonial-card, .news-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .display-4 {
+            font-size: 2.5rem;
         }
     }
+    
+    /* Loading Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease forwards;
+    }
 </style>
+{% endblock %}
 
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7 hero-content">
+                <div class="text-white p-4">
+                    <h1 class="display-4 fw-bold mb-4 animate-fade-in-up" style="animation-delay: 0.1s;">
+                        Discover Your Next <span class="text-warning">Favorite Book</span>
+                    </h1>
+                    <p class="lead mb-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+                        Welcome to Silent Library - Your digital sanctuary for books, knowledge, and imagination. 
+                        Explore thousands of titles, borrow instantly, and embark on literary adventures.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 animate-fade-in-up" style="animation-delay: 0.3s;">
+                        <a href="{% url 'book_list' %}" class="btn btn-light btn-lg px-4 py-3">
+                            <i class="fas fa-book-open me-2"></i> Explore Library
+                        </a>
+                        {% if not user.is_authenticated %}
+                        <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="fas fa-user-plus me-2"></i> Join Free
+                        </a>
+                        {% endif %}
+                        {% if user.is_authenticated and not user.is_staff %}
+                        <a href="{% url 'my_borrowings' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="fas fa-book-reader me-2"></i> My Borrowings
+                        </a>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row mt-5 pt-3 animate-fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="col-md-4 col-6">
+                            <div class="d-flex align-items-center text-white">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2);">
+                                    <i class="fas fa-check-circle fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Free Access</h5>
+                                    <small>No membership fees</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="d-flex align-items-center text-white">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2);">
+                                    <i class="fas fa-clock fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">24/7 Access</h5>
+                                    <small>Always open</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="d-flex align-items-center text-white">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2);">
+                                    <i class="fas fa-mobile-alt fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Digital Access</h5>
+                                    <small>Read anywhere</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 text-center">
+                <div class="position-relative">
+                    <div class="hero-book rounded-circle bg-white d-flex align-items-center justify-content-center mx-auto" 
+                         style="width: 300px; height: 300px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+                        <i class="fas fa-book-reader fa-8x" style="color: var(--primary-color);"></i>
+                    </div>
+                    <div class="position-absolute top-0 start-50 translate-middle-x mt-4">
+                        <div class="badge bg-light text-dark p-3 rounded-pill shadow">
+                            <i class="fas fa-star me-1" style="color: #ffd700;"></i>
+                            Over 10,000 Books
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Stats -->
+<section class="mb-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5" style="color: var(--secondary-color);">
+            <i class="fas fa-chart-line me-2"></i>Library Statistics
+        </h2>
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card stat-card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="stat-icon rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(138, 32, 98, 0.1) 0%, rgba(138, 32, 98, 0.2) 100%);">
+                            <i class="fas fa-book fa-3x" style="color: var(--primary-color);"></i>
+                        </div>
+                        <h2 class="display-5 fw-bold mb-2 counter" data-count="10500">0</h2>
+                        <p class="card-text text-muted mb-0">Books in Collection</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card stat-card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="stat-icon rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(29, 56, 106, 0.1) 0%, rgba(29, 56, 106, 0.2) 100%);">
+                            <i class="fas fa-users fa-3x" style="color: var(--secondary-color);"></i>
+                        </div>
+                        <h2 class="display-5 fw-bold mb-2 counter" data-count="5200">0</h2>
+                        <p class="card-text text-muted mb-0">Active Members</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card stat-card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="stat-icon rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(189, 151, 76, 0.1) 0%, rgba(189, 151, 76, 0.2) 100%);">
+                            <i class="fas fa-book-reader fa-3x" style="color: #bd974c;"></i>
+                        </div>
+                        <h2 class="display-5 fw-bold mb-2 counter" data-count="3800">0</h2>
+                        <p class="card-text text-muted mb-0">Monthly Borrowings</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card stat-card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="stat-icon rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(179, 108, 142, 0.1) 0%, rgba(179, 108, 142, 0.2) 100%);">
+                            <i class="fas fa-star fa-3x" style="color: #b36c8e;"></i>
+                        </div>
+                        <h2 class="display-5 fw-bold mb-2">
+                            <span class="counter" data-count="4.7">0</span>/5
+                        </h2>
+                        <p class="card-text text-muted mb-0">Member Satisfaction</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5 mb-5" style="background-color: #f9f9f9;">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5" style="color: var(--secondary-color);">
+            <i class="fas fa-play-circle me-2"></i>How It Works
+        </h2>
+        <p class="text-center text-muted mb-5">Get started with Silent Library in just a few simple steps</p>
+        
+        <div class="row position-relative">
+            <!-- Step Connector -->
+            <div class="col-12 d-none d-lg-block">
+                <div class="step-connector"></div>
+            </div>
+            
+            <!-- Step 1 -->
+            <div class="col-lg-3 col-md-6 mb-4 position-relative">
+                <div class="step-number">1</div>
+                <div class="text-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                         style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+                        <i class="fas fa-user-plus fa-4x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2" style="color: var(--primary-color);">Create Account</h5>
+                    <p class="text-muted small">Sign up for free in minutes</p>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="btn btn-sm btn-primary mt-2">
+                        Sign Up Now
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="col-lg-3 col-md-6 mb-4 position-relative">
+                <div class="step-number">2</div>
+                <div class="text-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                         style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--secondary-color) 0%, #2a4a8a 100%);">
+                        <i class="fas fa-search fa-4x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2" style="color: var(--secondary-color);">Browse & Search</h5>
+                    <p class="text-muted small">Find books by genre, author, or title</p>
+                    <a href="{% url 'book_list' %}" class="btn btn-sm btn-primary mt-2">
+                        Browse Collection
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="col-lg-3 col-md-6 mb-4 position-relative">
+                <div class="step-number">3</div>
+                <div class="text-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                         style="width: 120px; height: 120px; background: linear-gradient(135deg, #bd974c 0%, #d4b16d 100%);">
+                        <i class="fas fa-book-reader fa-4x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2" style="color: #bd974c;">Borrow Books</h5>
+                    <p class="text-muted small">Click to borrow instantly</p>
+                    {% if user.is_authenticated and not user.is_staff %}
+                    <a href="{% url 'book_list' %}" class="btn btn-sm btn-primary mt-2">
+                        Borrow Now
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Step 4 -->
+            <div class="col-lg-3 col-md-6 mb-4 position-relative">
+                <div class="step-number">4</div>
+                <div class="text-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                         style="width: 120px; height: 120px; background: linear-gradient(135deg, #b36c8e 0%, #c984a8 100%);">
+                        <i class="fas fa-heart fa-4x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2" style="color: #b36c8e;">Enjoy Reading</h5>
+                    <p class="text-muted small">Read and return when done</p>
+                    <a href="#" class="btn btn-sm btn-primary mt-2">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="mb-5">
+    <div class="container">
+        <h2 class="fw-bold mb-4" style="color: var(--secondary-color);">
+            <i class="fas fa-tags me-2"></i>Popular Categories
+        </h2>
+        <p class="text-muted mb-4">Explore books by your favorite genres</p>
+        
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card category-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="category-icon rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(138, 32, 98, 0.1) 0%, rgba(138, 32, 98, 0.2) 100%);">
+                                <i class="fas fa-magic fa-2x" style="color: var(--primary-color);"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1" style="color: var(--primary-color);">Fiction</h5>
+                                <p class="text-muted small mb-0">2,500+ books</p>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted small">Novels, short stories, and literary works</p>
+                        <a href="{% url 'book_list' %}?genre=fiction" class="btn btn-sm btn-outline-primary mt-2">
+                            Browse <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card category-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="category-icon rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(29, 56, 106, 0.1) 0%, rgba(29, 56, 106, 0.2) 100%);">
+                                <i class="fas fa-graduation-cap fa-2x" style="color: var(--secondary-color);"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1" style="color: var(--secondary-color);">Non-Fiction</h5>
+                                <p class="text-muted small mb-0">1,800+ books</p>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted small">Biographies, history, science, and more</p>
+                        <a href="{% url 'book_list' %}?genre=non-fiction" class="btn btn-sm btn-outline-primary mt-2">
+                            Browse <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card category-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="category-icon rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(189, 151, 76, 0.1) 0%, rgba(189, 151, 76, 0.2) 100%);">
+                                <i class="fas fa-flask fa-2x" style="color: #bd974c;"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1" style="color: #bd974c;">Science</h5>
+                                <p class="text-muted small mb-0">950+ books</p>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted small">Technology, physics, biology, and more</p>
+                        <a href="{% url 'book_list' %}?genre=science" class="btn btn-sm btn-outline-primary mt-2">
+                            Browse <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card category-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="category-icon rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(179, 108, 142, 0.1) 0%, rgba(179, 108, 142, 0.2) 100%);">
+                                <i class="fas fa-dragon fa-2x" style="color: #b36c8e;"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1" style="color: #b36c8e;">Fantasy</h5>
+                                <p class="text-muted small mb-0">1,200+ books</p>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted small">Magical worlds and epic adventures</p>
+                        <a href="{% url 'book_list' %}?genre=fantasy" class="btn btn-sm btn-outline-primary mt-2">
+                            Browse <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'book_list' %}" class="btn btn-primary px-4">
+                <i class="fas fa-eye me-2"></i> View All Categories
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 mb-5" style="background-color: #f9f9f9;">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-5" style="color: var(--secondary-color);">
+            <i class="fas fa-comments me-2"></i>What Our Members Say
+        </h2>
+        <p class="text-center text-muted mb-5">Hear from our satisfied library members</p>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card testimonial-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://ui-avatars.com/api/?name=Sarah+Johnson&background=8a2062&color=fff&size=60" 
+                                 alt="Sarah Johnson" 
+                                 class="testimonial-avatar me-3">
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--primary-color);">Sarah Johnson</h6>
+                                <div class="small">
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted">
+                            "Silent Library has transformed my reading habits. The digital borrowing system is so convenient, and the collection is incredible!"
+                        </p>
+                        <div class="text-muted small mt-3">
+                            <i class="fas fa-book me-1"></i> 42 books borrowed
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card testimonial-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://ui-avatars.com/api/?name=Michael+Chen&background=1d386a&color=fff&size=60" 
+                                 alt="Michael Chen" 
+                                 class="testimonial-avatar me-3">
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--secondary-color);">Michael Chen</h6>
+                                <div class="small">
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star-half-alt" style="color: #ffd700;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted">
+                            "As a student, the variety of academic books available has been invaluable for my research. The reservation system works perfectly!"
+                        </p>
+                        <div class="text-muted small mt-3">
+                            <i class="fas fa-book me-1"></i> 28 books borrowed
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card testimonial-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://ui-avatars.com/api/?name=Emma+Rodriguez&background=b36c8e&color=fff&size=60" 
+                                 alt="Emma Rodriguez" 
+                                 class="testimonial-avatar me-3">
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: #b36c8e;">Emma Rodriguez</h6>
+                                <div class="small">
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted">
+                            "The ability to rate and review books helps me discover new favorites. The community aspect makes reading even more enjoyable!"
+                        </p>
+                        <div class="text-muted small mt-3">
+                            <i class="fas fa-book me-1"></i> 56 books borrowed
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- News & Updates -->
+<section class="mb-5">
+    <div class="container">
+        <h2 class="fw-bold mb-4" style="color: var(--secondary-color);">
+            <i class="fas fa-newspaper me-2"></i>Library News & Updates
+        </h2>
+        <p class="text-muted mb-4">Stay informed about the latest library happenings</p>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card news-card border-0 shadow-sm h-100">
+                    <div class="position-relative">
+                        <div class="news-date">
+                            <i class="fas fa-calendar me-1"></i> Jan 15, 2026
+                        </div>
+                        <div class="card-header border-0" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%); height: 10px;"></div>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3" style="color: var(--primary-color);">New Book Arrivals</h5>
+                        <p class="card-text text-muted">
+                            We've added 250+ new books to our collection this month, including the latest bestsellers and award winners.
+                        </p>
+                        <a href="{% url 'book_list' %}" class="btn btn-sm btn-outline-primary">
+                            Explore New Arrivals
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card news-card border-0 shadow-sm h-100">
+                    <div class="position-relative">
+                        <div class="news-date">
+                            <i class="fas fa-calendar me-1"></i> Jan 10, 2026
+                        </div>
+                        <div class="card-header border-0" style="background: linear-gradient(135deg, var(--secondary-color) 0%, #2a4a8a 100%); height: 10px;"></div>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3" style="color: var(--secondary-color);">Extended Borrowing Period</h5>
+                        <p class="card-text text-muted">
+                            We're now offering 21-day borrowing periods for all members. Enjoy your books for longer!
+                        </p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card news-card border-0 shadow-sm h-100">
+                    <div class="position-relative">
+                        <div class="news-date">
+                            <i class="fas fa-calendar me-1"></i> Jan 5, 2026
+                        </div>
+                        <div class="card-header border-0" style="background: linear-gradient(135deg, #bd974c 0%, #d4b16d 100%); height: 10px;"></div>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3" style="color: #bd974c;">Reading Challenge 2026</h5>
+                        <p class="card-text text-muted">
+                            Join our annual reading challenge! Set your reading goal and earn badges as you progress.
+                        </p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">
+                            Join Challenge
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section py-5 mb-5 rounded-lg">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center text-white">
+                <h2 class="fw-bold mb-4">Ready to Start Your Reading Journey?</h2>
+                <p class="lead mb-4">Join thousands of readers who have discovered the joy of digital library access. Start exploring our collection today!</p>
+                <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="btn btn-light btn-lg px-4 py-3">
+                        <i class="fas fa-user-plus me-2"></i> Sign Up Free
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'book_list' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-search me-2"></i> Browse Collection
+                    </a>
+                    {% if user.is_authenticated and not user.is_staff %}
+                    <a href="{% url 'my_borrowings' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-book-reader me-2"></i> My Library
+                    </a>
+                    {% endif %}
+                </div>
+                <p class="mt-4 mb-0 small opacity-75">
+                    <i class="fas fa-check-circle me-1"></i>
+                    No fees • No commitments • Unlimited access
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Counter animation for statistics
+    document.addEventListener('DOMContentLoaded', function() {
+        // Counter animation
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200;
+        
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = target / speed;
+                
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCount, 10);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            
+            updateCount();
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                if (this.getAttribute('href') !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+        
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in-up');
+                }
+            });
+        }, observerOptions);
+        
+        // Observe elements for animation
+        document.querySelectorAll('.stat-card, .category-card, .testimonial-card, .news-card').forEach(el => {
+            observer.observe(el);
+        });
+    });
+</script>
 {% endblock %}

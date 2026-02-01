@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+
+{% block title %}Reviews - {{ book.title }} - Silent Library{% endblock %}
+
+{% block extra_css %}
+<style>
+    .review-card {
+        border-left: 4px solid var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    
+    .review-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--accent-color);
+    }
+    
+    .review-date {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .rating-stars {
+        color: #ffc107;
+    }
+    
+    .average-rating-badge {
+        font-size: 1.5rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);
+        color: white;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .review-stats {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Book Header -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                {% if book.cover_pic %}
+                    <img src="{{ book.cover_pic.url }}" 
+                         alt="{{ book.title }}" 
+                         class="rounded shadow-sm me-4" 
+                         style="width: 100px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="rounded border bg-light d-flex align-items-center justify-content-center me-4" 
+                         style="width: 100px; height: 150px;">
+                        <i class="fas fa-book fa-3x text-muted"></i>
+                    </div>
+                {% endif %}
+                <div>
+                    <h1 class="fw-bold mb-2" style="color: var(--primary-color);">{{ book.title }}</h1>
+                    <p class="text-muted mb-3">by {{ book.author }}</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Books
+                        </a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'submit_review' book.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-star me-2"></i>
+                            {% if user_has_reviewed %}Edit Your Review{% else %}Write a Review{% endif %}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Reviews List -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+                    <h5 class="text-white mb-0">
+                        <i class="fas fa-comments me-2"></i>Reader Reviews ({{ reviews|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if reviews %}
+                        {% for review in reviews %}
+                        <div class="review-card mb-4 p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center">
+                                    {% if review.user.profile.profile_pic %}
+                                        <img src="{{ review.user.profile.profile_pic.url }}" 
+                                             alt="{{ review.user.username }}" 
+                                             class="user-avatar me-3">
+                                    {% else %}
+                                        <div class="user-avatar bg-light text-primary d-flex align-items-center justify-content-center me-3">
+                                            {% if review.user.first_name %}
+                                                {{ review.user.first_name.0|upper }}{% if review.user.last_name %}{{ review.user.last_name.0|upper }}{% endif %}
+                                            {% else %}
+                                                <i class="fas fa-user"></i>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="fw-bold mb-1">
+                                            {% if review.user.first_name %}
+                                                {{ review.user.first_name }} {{ review.user.last_name|default:"" }}
+                                            {% else %}
+                                                {{ review.user.username }}
+                                            {% endif %}
+                                            {% if review.user == user %}
+                                            <span class="badge bg-info ms-2">Your Review</span>
+                                            {% endif %}
+                                        </h6>
+                                        <div class="rating-stars mb-1">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <span class="ms-2">{{ review.rating }}/5</span>
+                                        </div>
+                                        <small class="review-date">
+                                            <i class="fas fa-calendar-alt me-1"></i>
+                                            {{ review.created_at|date:"F d, Y" }}
+                                            {% if review.created_at != review.updated_at %}
+                                            <span class="text-muted">(edited)</span>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                {% if review.user == user %}
+                                <a href="{% url 'submit_review' book.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                {% endif %}
+                            </div>
+                            
+                            {% if review.comment %}
+                            <p class="mb-0">{{ review.comment|linebreaks }}</p>
+                            {% else %}
+                            <p class="text-muted mb-0 fst-italic">No comment provided.</p>
+                            {% endif %}
+                            
+                            {% if not forloop.last %}
+                            <hr class="my-4">
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted mb-3">No Reviews Yet</h5>
+                        <p class="text-muted mb-4">Be the first to share your thoughts about this book!</p>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'submit_review' book.id %}" class="btn btn-primary">
+                            <i class="fas fa-star me-2"></i>Write First Review
+                        </a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Review
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rating Statistics - SIMPLIFIED VERSION -->
+        <div class="col-lg-4">
+            <div class="review-stats mb-4">
+                <h5 class="fw-bold mb-4" style="color: var(--primary-color);">
+                    <i class="fas fa-chart-bar me-2"></i>Rating Overview
+                </h5>
+                
+                <div class="text-center mb-4">
+                    <div class="average-rating-badge mx-auto mb-3">
+                        {{ average_rating|floatformat:1 }}
+                    </div>
+                    <div class="rating-stars mb-2">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= average_rating|floatformat:0 %}
+                                <i class="fas fa-star fa-lg"></i>
+                            {% else %}
+                                <i class="far fa-star fa-lg"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p class="text-muted mb-0">{{ reviews|length }} review{{ reviews|length|pluralize }}</p>
+                </div>
+                
+                {% if reviews %}
+                <div class="mt-4">
+                    <h6 class="fw-bold mb-3" style="color: var(--primary-color);">Rating Summary</h6>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">5 Stars</span>
+                            <span class="badge bg-primary rounded-pill">{% widthratio rating_5_count 1 1 %}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">4 Stars</span>
+                            <span class="badge bg-primary rounded-pill">{% widthratio rating_4_count 1 1 %}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">3 Stars</span>
+                            <span class="badge bg-primary rounded-pill">{% widthratio rating_3_count 1 1 %}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">2 Stars</span>
+                            <span class="badge bg-primary rounded-pill">{% widthratio rating_2_count 1 1 %}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">1 Star</span>
+                            <span class="badge bg-primary rounded-pill">{% widthratio rating_1_count 1 1 %}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mt-4 pt-3 border-top">
+                    <h6 class="fw-bold mb-3" style="color: var(--primary-color);">Review Guidelines</h6>
+                    <ul class="small mb-0">
+                        <li class="mb-2">Share your honest experience</li>
+                        <li class="mb-2">Be respectful to other readers</li>
+                        <li class="mb-2">Focus on the book's content</li>
+                        <li>Help others discover great books</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3" style="color: var(--primary-color);">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h6>
+                    <div class="d-grid gap-2">
+                        {% if book.can_borrow and user.is_authenticated %}
+                        <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">
+                            <i class="fas fa-book-reader me-2"></i>Borrow This Book
+                        </a>
+                        {% elif not user.is_authenticated %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Borrow
+                        </a>
+                        {% else %}
+                        <button class="btn btn-secondary" disabled>
+                            <i class="fas fa-times me-2"></i>Currently Unavailable
+                        </button>
+                        {% endif %}
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-search me-2"></i>Find Similar Books
+                        </a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'submit_review' book.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-star me-2"></i>
+                            {% if user_has_reviewed %}Update Your Review{% else %}Write a Review{% endif %}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips if any
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+        new bootstrap.Tooltip(tooltip);
+    });
+});
+</script>
+{% endblock %}

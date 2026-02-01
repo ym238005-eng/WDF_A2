@@ -1,20 +1,144 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirm Delete</title>
-</head>
-<body>
-    <h1>Confirm Delete</h1>
-    <p>Are you sure you want to delete the book "{{ book.title }}"?</p>
+{% extends 'base.html' %}
 
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Yes, Delete</button>
+{% block title %}Confirm Delete - Silent Library{% endblock %}
 
-        <a href="{% url 'book_list' %}">Cancel</a>
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-book fa-4x" style="color: var(--primary-color);"></i>
+                        </div>
+                        <h3 class="fw-bold" style="color: var(--primary-color);">{{ book.title }}</h3>
+                        <p class="text-muted">by {{ book.author }}</p>
+                    </div>
+                    
+                    <div class="alert alert-danger alert-custom mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-circle fa-2x me-3" style="color: #dc3545;"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Warning: This Action Cannot Be Undone</h6>
+                                <p class="mb-0">Are you sure you want to delete this book permanently?</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-0 mb-4" style="background-color: #f8f9fa;">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3" style="color: var(--secondary-color);">
+                                <i class="fas fa-info-circle me-2"></i>Book Details
+                            </h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="fas fa-barcode me-2" style="color: var(--primary-color);"></i>
+                                    <strong>ISBN:</strong> {{ book.isbn }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-tag me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Category:</strong> {{ book.category }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Published:</strong> {{ book.published_date|date:"F j, Y" }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-copy me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Available Copies:</strong> {{ book.available_copies }}
+                                </li>
+                                {% if book.average_rating > 0 %}
+                                <li class="mb-2">
+                                    <i class="fas fa-star me-2" style="color: #ffc107;"></i>
+                                    <strong>Rating:</strong> {{ book.average_rating|floatformat:1 }}/5 ({{ book.rating_count }} review{{ book.rating_count|pluralize }})
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <i class="fas fa-hashtag me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Total Borrowed:</strong> {{ book.total_borrowed }} time{{ book.total_borrowed|pluralize }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    {% if book.rating_count > 0 or book.total_borrowed > 0 %}
+                    <div class="alert alert-warning alert-custom mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-database fa-2x me-3" style="color: #ffc107;"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Associated Data That Will Be Deleted</h6>
+                                <ul class="mb-0">
+                                    {% if book.rating_count > 0 %}
+                                    <li>{{ book.rating_count }} review{{ book.rating_count|pluralize }} and rating{{ book.rating_count|pluralize }}</li>
+                                    {% endif %}
+                                    {% if book.total_borrowed > 0 %}
+                                    <li>{{ book.total_borrowed }} borrowing record{{ book.total_borrowed|pluralize }}</li>
+                                    {% endif %}
+                                    <li>Book cover image (if exists)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST" action="{% url 'delete_book' book.id %}">
+                        {% csrf_token %}
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                            <label class="form-check-label text-danger fw-bold" for="confirmDelete">
+                                I understand this action is permanent and cannot be undone.
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg" id="deleteButton" disabled>
+                                <i class="fas fa-trash me-2"></i>Yes, Delete Book
+                            </button>
+                            <a href="{% url 'book_list' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enable delete button only when checkbox is checked
+    const confirmCheckbox = document.getElementById('confirmDelete');
+    const deleteButton = document.getElementById('deleteButton');
+    
+    if (confirmCheckbox && deleteButton) {
+        confirmCheckbox.addEventListener('change', function() {
+            deleteButton.disabled = !this.checked;
+        });
         
-    </form>
-</body>
-</html>
+        // Add final confirmation before form submission
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const bookTitle = "{{ book.title|escapejs }}";
+            const finalMessage = `Are you absolutely certain you want to permanently delete "${bookTitle}"?`;
+            
+            if (!confirm(finalMessage)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Show loading state
+            deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting...';
+            deleteButton.disabled = true;
+        });
+    }
+});
+</script>
+{% endblock %}

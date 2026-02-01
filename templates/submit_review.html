@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Book - Silent Library{% endblock %}
+
+{% block extra_css %}
+<style>
+    .rating-stars {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+    }
+    
+    .star-rating input {
+        display: none;
+    }
+    
+    .star-rating label {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.3s;
+        margin-right: 5px;
+    }
+    
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+        color: #ffc107;
+    }
+    
+    .rating-option {
+        border: 2px solid #eee;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .rating-option:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(138, 32, 98, 0.05);
+    }
+    
+    .rating-option.selected {
+        border-color: var(--primary-color);
+        background-color: rgba(138, 32, 98, 0.1);
+    }
+    
+    .rating-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .rating-stars-static {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+    
+    .review-preview {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+                    <h4 class="mb-0">
+                        <i class="fas fa-star me-2"></i>
+                        {% if existing_review %}Update Your Review{% else %}Write a Review{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Book Information -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center">
+                            {% if book.cover_pic %}
+                                <img src="{{ book.cover_pic.url }}" 
+                                     alt="{{ book.title }}" 
+                                     class="rounded shadow-sm me-3" 
+                                     style="width: 80px; height: 120px; object-fit: cover;">
+                            {% else %}
+                                <div class="rounded border bg-light d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 80px; height: 120px;">
+                                    <i class="fas fa-book fa-2x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h5 class="fw-bold mb-1" style="color: var(--primary-color);">{{ book.title }}</h5>
+                                <p class="text-muted mb-2">by {{ book.author }}</p>
+                                {% if book.average_rating > 0 %}
+                                <div class="d-flex align-items-center">
+                                    <div class="rating-stars-static me-2">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= book.average_rating|floatformat:0 %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <small class="text-muted">{{ book.average_rating|floatformat:1 }} ({{ book.rating_count }} reviews)</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Form -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <!-- Rating Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold mb-3">Your Rating *</label>
+                            <div class="rating-options">
+                                {% for value, label in form.rating.field.choices %}
+                                <div class="rating-option" onclick="selectRating('{{ value }}')" id="ratingOption{{ value }}">
+                                    <input type="radio" name="rating" value="{{ value }}" 
+                                           id="rating{{ value }}" 
+                                           {% if form.rating.value == value|stringformat:"i" %}checked{% endif %}
+                                           style="display: none;">
+                                    <label for="rating{{ value }}" class="rating-label">
+                                        <div>
+                                            <strong>{{ label }}</strong>
+                                            <div class="rating-stars-static mt-1">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= value %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% if form.rating.value == value|stringformat:"i" %}
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        {% endif %}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.rating.errors %}
+                            <small class="text-danger">{{ form.rating.errors.0 }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Review Comment -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Your Review (Optional)</label>
+                            <textarea class="form-control" name="comment" id="comment" rows="5" 
+                                      placeholder="Share your thoughts about this book. What did you like or dislike? Would you recommend it to others?">{{ form.comment.value|default:'' }}</textarea>
+                            {% if form.comment.errors %}
+                            <small class="text-danger">{{ form.comment.errors.0 }}</small>
+                            {% endif %}
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-muted">Maximum 500 characters</small>
+                                <small><span id="char-count">0</span>/500</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Review Preview -->
+                        <div class="review-preview d-none" id="reviewPreview">
+                            <h6 class="fw-bold mb-3">Preview of Your Review</h6>
+                            <div class="mb-3">
+                                <div class="rating-stars-static mb-2" id="previewStars"></div>
+                                <p class="mb-0" id="previewComment"></p>
+                            </div>
+                            <small class="text-muted">This is how your review will appear to others.</small>
+                        </div>
+                        
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                            <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                {% if existing_review %}Update Review{% else %}Submit Review{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Review Guidelines -->
+            <div class="card mt-4 border-0" style="background-color: #f8f9fa;">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3" style="color: var(--primary-color);">
+                        <i class="fas fa-lightbulb me-2"></i>Review Guidelines
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li class="mb-2">Be honest and respectful in your review</li>
+                        <li class="mb-2">Focus on the book's content, writing style, and your personal experience</li>
+                        <li class="mb-2">Avoid spoilers or use spoiler warnings</li>
+                        <li class="mb-2">Don't include personal information or offensive language</li>
+                        <li class="mb-2">Your review helps other readers make informed decisions</li>
+                        <li>You can edit your review anytime by returning to this page</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter
+    const comment = document.getElementById('comment');
+    const charCount = document.getElementById('char-count');
+    const reviewPreview = document.getElementById('reviewPreview');
+    const previewComment = document.getElementById('previewComment');
+    const previewStars = document.getElementById('previewStars');
+    
+    if (comment && charCount) {
+        // Initialize character count
+        charCount.textContent = comment.value.length;
+        
+        comment.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = length;
+            
+            // Show/hide preview
+            if (length > 0) {
+                reviewPreview.classList.remove('d-none');
+                previewComment.textContent = this.value.substring(0, 200);
+                if (length > 200) {
+                    previewComment.textContent += '...';
+                }
+            } else {
+                reviewPreview.classList.add('d-none');
+            }
+            
+            // Update character count color
+            if (length > 500) {
+                charCount.classList.add('text-danger');
+                comment.classList.add('is-invalid');
+            } else {
+                charCount.classList.remove('text-danger');
+                comment.classList.remove('is-invalid');
+            }
+        });
+    }
+    
+    // Initialize preview with existing content
+    if (comment.value.length > 0) {
+        reviewPreview.classList.remove('d-none');
+        previewComment.textContent = comment.value.substring(0, 200);
+        if (comment.value.length > 200) {
+            previewComment.textContent += '...';
+        }
+    }
+    
+    // Select first rating option if none selected
+    const selectedRating = document.querySelector('input[name="rating"]:checked');
+    if (selectedRating) {
+        selectRating(selectedRating.value);
+    }
+});
+
+function selectRating(rating) {
+    // Update radio button
+    const radio = document.getElementById('rating' + rating);
+    if (radio) {
+        radio.checked = true;
+    }
+    
+    // Update UI
+    document.querySelectorAll('.rating-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    const selectedOption = document.getElementById('ratingOption' + rating);
+    if (selectedOption) {
+        selectedOption.classList.add('selected');
+    }
+    
+    // Update preview stars
+    const previewStars = document.getElementById('previewStars');
+    if (previewStars) {
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                starsHtml += '<i class="fas fa-star"></i>';
+            } else {
+                starsHtml += '<i class="far fa-star"></i>';
+            }
+        }
+        previewStars.innerHTML = starsHtml;
+    }
+}
+
+// Auto-select rating option on page load for existing reviews
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedRadio = document.querySelector('input[name="rating"]:checked');
+    if (selectedRadio) {
+        selectRating(selectedRadio.value);
+    }
+});
+</script>
+{% endblock %}

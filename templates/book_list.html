@@ -55,6 +55,25 @@
         background-color: rgba(138, 32, 98, 0.05);
         transition: all 0.2s ease;
     }
+    
+    /* Rating stars */
+    .rating-stars-small {
+        color: #ffc107;
+        font-size: 0.8rem;
+    }
+    
+    /* Borrow button styles */
+    .borrow-btn {
+        min-width: 100px;
+    }
+    
+    /* Action buttons */
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 </style>
 {% endblock %}
 
@@ -65,11 +84,19 @@
             <i class="fas fa-book me-2"></i>Book Collection
         </h1>
         
-        {% if user.is_superuser or user.is_staff %}
-        <a href="{% url 'book_create' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-plus-circle me-2"></i>Add New Book
-        </a>
-        {% endif %}
+        <div class="d-flex gap-2">
+            {% if user.is_authenticated and not user.is_staff %}
+            <a href="{% url 'my_borrowings' %}" class="btn btn-outline-primary">
+                <i class="fas fa-book-reader me-2"></i>My Borrowings
+            </a>
+            {% endif %}
+            
+            {% if user.is_superuser or user.is_staff %}
+            <a href="{% url 'book_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Add New Book
+            </a>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Search Section -->
@@ -90,33 +117,38 @@
                                class="form-control" 
                                name="search" 
                                placeholder="Search books by title, author, genre, etc..." 
-                               value="{{ search_query }}">
+                               value="{{ request.GET.search|default:'' }}">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <select class="form-select" name="search_by">
-                        <option value="title" {% if search_by == 'title' %}selected{% endif %}>Title</option>
-                        <option value="author" {% if search_by == 'author' %}selected{% endif %}>Author</option>
-                        <option value="genre" {% if search_by == 'genre' %}selected{% endif %}>Genre</option>
-                        <option value="category" {% if search_by == 'category' %}selected{% endif %}>Category</option>
-                        <option value="isbn" {% if search_by == 'isbn' %}selected{% endif %}>ISBN</option>
+                        <option value="title" {% if request.GET.search_by == 'title' %}selected{% endif %}>Title</option>
+                        <option value="author" {% if request.GET.search_by == 'author' %}selected{% endif %}>Author</option>
+                        <option value="genre" {% if request.GET.search_by == 'genre' %}selected{% endif %}>Genre</option>
+                        <option value="category" {% if request.GET.search_by == 'category' %}selected{% endif %}>Category</option>
+                        <option value="isbn" {% if request.GET.search_by == 'isbn' %}selected{% endif %}>ISBN</option>
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Search
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                        {% if request.GET.search %}
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i>
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </form>
             
-            {% if search_query %}
+            {% if request.GET.search %}
             <div class="mt-3">
                 <p class="mb-0">
                     <i class="fas fa-info-circle me-2 text-primary"></i>
-                    Found <strong>{{ books|length }}</strong> book(s) matching "<strong>{{ search_query }}</strong>" in <strong>{{ search_by }}</strong>
-                    <a href="{% url 'book_list' %}" class="btn btn-sm btn-outline-secondary ms-3">
-                        <i class="fas fa-times me-1"></i>Clear Search
-                    </a>
+                    Found <strong>{{ books|length }}</strong> book(s) matching "<strong>{{ request.GET.search }}</strong>" 
+                    {% if request.GET.search_by %}in <strong>{{ request.GET.search_by }}</strong>{% endif %}
                 </p>
             </div>
             {% endif %}
@@ -127,9 +159,16 @@
 
     <div class="card shadow-sm">
         <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
-            <h5 class="text-white mb-0">
-                <i class="fas fa-books me-2"></i>Books List ({{ books|length }} books)
-            </h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="text-white mb-0">
+                    <i class="fas fa-books me-2"></i>Books List ({{ books|length }} books)
+                </h5>
+                {% if user.is_superuser or user.is_staff %}
+                <a href="{% url 'manage_all_borrowings' %}" class="btn btn-sm btn-light">
+                    <i class="fas fa-tasks me-1"></i>Manage Borrowings
+                </a>
+                {% endif %}
+            </div>
         </div>
         
         <div class="card-body p-0">
@@ -141,11 +180,12 @@
                             <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">Book Details</th>
                             <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">Category</th>
                             <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">Published Date</th>
-                            <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">ISBN</th>
+                            <th class="py-3 text-uppercase small fw-bold" style="color: var(--secondary-color);">Rating</th>
                             <th class="py-3 text-center text-uppercase small fw-bold" style="color: var(--secondary-color);">Availability</th>
+                            <th class="py-3 text-center text-uppercase small fw-bold" style="color: var(--secondary-color);">Actions</th>
                             
                             {% if user.is_superuser or user.is_staff %}
-                            <th class="py-3 text-end pe-4 text-uppercase small fw-bold" style="color: var(--secondary-color);">Actions</th>
+                            <th class="py-3 text-end pe-4 text-uppercase small fw-bold" style="color: var(--secondary-color);">Admin</th>
                             {% endif %}
                         </tr>
                     </thead>
@@ -196,9 +236,27 @@
                                 </small>
                             </td>
                             
-                            <!-- ISBN -->
+                            <!-- Rating -->
                             <td>
-                                <code class="text-muted small">{{ book.isbn }}</code>
+                                {% if book.average_rating > 0 %}
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="mb-1">
+                                        <div class="rating-stars-small">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= book.average_rating|floatformat:0 %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <small class="ms-1">{{ book.average_rating|floatformat:1 }}</small>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">({{ book.rating_count }} review{{ book.rating_count|pluralize }})</small>
+                                </div>
+                                {% else %}
+                                <span class="text-muted small">No ratings yet</span>
+                                {% endif %}
                             </td>
                             
                             <!-- Availability -->
@@ -214,7 +272,34 @@
                                 {% endif %}
                             </td>
                             
-                            <!-- Actions (for admin/staff only) -->
+                            <!-- User Actions -->
+                            <td class="text-center">
+                                <div class="action-buttons">
+                                    {% if user.is_authenticated and not user.is_staff %}
+                                        {% if book.can_borrow %}
+                                            <a href="{% url 'borrow_book' book.id %}" class="btn btn-sm btn-primary borrow-btn">
+                                                <i class="fas fa-book-reader me-1"></i>Borrow
+                                            </a>
+                                        {% else %}
+                                            <button class="btn btn-sm btn-secondary borrow-btn" disabled>
+                                                <i class="fas fa-times me-1"></i>Unavailable
+                                            </button>
+                                        {% endif %}
+                                        <a href="{% url 'book_reviews' book.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-star me-1"></i>Reviews
+                                        </a>
+                                    {% elif not user.is_authenticated %}
+                                        <a href="{% url 'login' %}" class="btn btn-sm btn-primary borrow-btn">
+                                            <i class="fas fa-sign-in-alt me-1"></i>Login to Borrow
+                                        </a>
+                                        <a href="{% url 'book_reviews' book.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-star me-1"></i>Reviews
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Admin Actions -->
                             {% if user.is_superuser or user.is_staff %}
                             <td class="text-end pe-4">
                                 <div class="btn-group" role="group">
@@ -239,7 +324,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="{% if user.is_superuser or user.is_staff %}7{% else %}6{% endif %}" class="text-center py-5 text-muted">
+                            <td colspan="{% if user.is_superuser or user.is_staff %}9{% else %}8{% endif %}" class="text-center py-5 text-muted">
                                 <i class="fas fa-book-open display-4 d-block mb-3 opacity-25"></i>
                                 <h5>No books found in the library</h5>
                                 <p class="mb-0">Add your first book to start building the collection.</p>
@@ -283,6 +368,31 @@
                                     <i class="fas fa-book fa-4x opacity-25"></i>
                                 </div>
                             {% endif %}
+                            
+                            <!-- Quick Actions -->
+                            <div class="mt-3">
+                                {% if user.is_authenticated and not user.is_staff %}
+                                    {% if book.can_borrow %}
+                                        <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary w-100 mb-2">
+                                            <i class="fas fa-book-reader me-2"></i>Borrow This Book
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-secondary w-100 mb-2" disabled>
+                                            <i class="fas fa-times me-2"></i>Currently Unavailable
+                                        </button>
+                                    {% endif %}
+                                    <a href="{% url 'book_reviews' book.id %}" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-star me-2"></i>View Reviews
+                                    </a>
+                                {% elif not user.is_authenticated %}
+                                    <a href="{% url 'login' %}" class="btn btn-primary w-100 mb-2">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Login to Borrow
+                                    </a>
+                                    <a href="{% url 'book_reviews' book.id %}" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-star me-2"></i>View Reviews
+                                    </a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                     
@@ -293,6 +403,36 @@
                             <i class="fas fa-user-pen me-2"></i><strong>Author:</strong> {{ book.author }}
                         </p>
                         
+                        <!-- Rating Display -->
+                        {% if book.average_rating > 0 %}
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="rating-stars" style="color: #ffc107; font-size: 1.2rem;">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= book.average_rating|floatformat:0 %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="ms-2 fw-bold">{{ book.average_rating|floatformat:1 }}/5</span>
+                                <span class="ms-2 text-muted">({{ book.rating_count }} review{{ book.rating_count|pluralize }})</span>
+                            </div>
+                            <a href="{% url 'book_reviews' book.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-comments me-1"></i>Read Reviews
+                            </a>
+                            {% if user.is_authenticated %}
+                                {% if user_has_borrowed %}
+                                <a href="{% url 'submit_review' book.id %}" class="btn btn-sm btn-primary ms-2">
+                                    <i class="fas fa-star me-1"></i>
+                                    {% if user_review %}Update Review{% else %}Write Review{% endif %}
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
                         <div class="mb-3">
                             <h6 class="fw-bold" style="color: var(--secondary-color);">Description:</h6>
                             <p class="text-muted">{{ book.description|default:"No description available." }}</p>
@@ -300,10 +440,14 @@
                         
                         <div class="row">
                             <div class="col-md-6 mb-2">
-                                <span class="badge rounded-pill fw-normal px-3 py-2 d-inline-flex align-items-center"
-                                      style="background-color: var(--accent-color); color: var(--secondary-color);">
-                                    <i class="fas fa-tag me-2"></i>{{ book.category }}
-                                </span>
+                                <p class="mb-1">
+                                    <i class="fas fa-tag me-2 text-muted"></i>
+                                    <strong>Category:</strong> 
+                                    <span class="badge rounded-pill px-3 py-1" 
+                                          style="background-color: var(--accent-color); color: var(--secondary-color);">
+                                        {{ book.category }}
+                                    </span>
+                                </p>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <p class="mb-1">
@@ -322,27 +466,40 @@
                                     <i class="fas fa-copy me-2 text-muted"></i>
                                     <strong>Available Copies:</strong> 
                                     {% if book.available_copies > 0 %}
-                                        <span class="text-success">{{ book.available_copies }}</span>
+                                        <span class="text-success fw-bold">{{ book.available_copies }}</span>
                                     {% else %}
-                                        <span class="text-danger">Out of Stock</span>
+                                        <span class="text-danger fw-bold">Out of Stock</span>
                                     {% endif %}
                                 </p>
                             </div>
+                            <div class="col-md-6 mb-2">
+                                <p class="mb-1">
+                                    <i class="fas fa-bookmark me-2 text-muted"></i>
+                                    <strong>Genre:</strong> {{ book.get_genre_display }}
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <p class="mb-1">
+                                    <i class="fas fa-hashtag me-2 text-muted"></i>
+                                    <strong>Total Borrowed:</strong> {{ book.total_borrowed }}
+                                </p>
+                            </div>
                         </div>
-
                     </div>
                 </div>
             </div>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-1"></i>Close
-                </button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-                    <i class="fas fa-arrow-left me-1"></i>Back to Library
-                </button>
-                {% if user.is_superuser or user.is_staff %}
-                <a href="{% url 'book_update' book.id %}" class="btn btn-warning">
-                    <i class="fas fa-edit me-1"></i>Edit Book
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                {% if user.is_authenticated and not user.is_staff %}
+                    {% if book.can_borrow %}
+                    <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">
+                        <i class="fas fa-book-reader me-2"></i>Borrow Now
+                    </a>
+                    {% endif %}
+                {% elif not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Borrow
                 </a>
                 {% endif %}
             </div>
@@ -351,40 +508,58 @@
 </div>
 {% endfor %}
 
-<!-- Modals for Delete Confirmation -->
+<!-- MODAL FOR DELETE CONFIRMATION - This is the first confirmation -->
 {% for book in books %}
 {% if user.is_superuser or user.is_staff %}
 <div class="modal fade" id="deleteModal{{ book.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ book.id }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="deleteModalLabel{{ book.id }}" style="color: var(--primary-color);">
-                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);">
+                <h5 class="modal-title text-white" id="deleteModalLabel{{ book.id }}">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
                     Confirm Delete
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete the book:</p>
-                <h6 class="fw-bold" style="color: var(--primary-color);">"{{ book.title }}"</h6>
-                <p class="text-muted mb-0">
-                    <small>by {{ book.author }}</small>
-                </p>
-                <div class="alert alert-warning mt-3">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    This action cannot be undone. All data related to this book will be permanently deleted.
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <i class="fas fa-trash-alt fa-4x text-danger"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3" style="color: var(--primary-color);">Are you sure?</h4>
+                    <p class="text-muted mb-3">You are about to delete the book:</p>
+                    <h5 class="fw-bold" style="color: var(--primary-color);">"{{ book.title }}"</h5>
+                    <p class="text-muted">by {{ book.author }}</p>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-circle fa-2x me-3"></i>
+                        <div>
+                            <h6 class="alert-heading mb-2">Important Notice</h6>
+                            <p class="mb-0">This will redirect you to a confirmation page where you can finalize the deletion.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-secondary mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-2">What will be deleted:</h6>
+                        <ul class="mb-0 small">
+                            <li>Book details and cover image</li>
+                            <li>{{ book.rating_count }} review{{ book.rating_count|pluralize }} and ratings</li>
+                            <li>{{ book.total_borrowed }} borrowing record{{ book.total_borrowed|pluralize }}</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer border-0">
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times me-1"></i>Cancel
                 </button>
-                <form action="{% url 'delete_book' book.id %}" method="POST" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-1"></i>Delete Book
-                    </button>
-                </form>
+                <a href="{% url 'delete_book' book.id %}" class="btn btn-danger">
+                    <i class="fas fa-arrow-right me-1"></i>Continue to Confirm
+                </a>
             </div>
         </div>
     </div>
@@ -401,6 +576,23 @@ document.addEventListener('DOMContentLoaded', function() {
         img.addEventListener('error', function() {
             this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='85' viewBox='0 0 60 85'%3E%3Crect width='60' height='85' fill='%23f8f9fa'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' fill='%236c757d' text-anchor='middle' dy='.3em'%3ENo Cover%3C/text%3E%3C/svg%3E";
         });
+    });
+    
+    // Add loading state to borrow buttons
+    const borrowButtons = document.querySelectorAll('.borrow-btn:not([disabled])');
+    borrowButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!this.hasAttribute('disabled')) {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+                this.setAttribute('disabled', 'disabled');
+            }
+        });
+    });
+    
+    // Initialize tooltips
+    const tooltips = document.querySelectorAll('[title]');
+    tooltips.forEach(tooltip => {
+        new bootstrap.Tooltip(tooltip);
     });
 });
 </script>

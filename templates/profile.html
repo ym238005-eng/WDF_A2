@@ -84,8 +84,8 @@
                                  style="width: 50px; height: 50px; background-color: #8a2062;">
                                 <i class="fas fa-book text-white"></i>
                             </div>
-                            <h3 class="fw-bold mb-1" style="color: #8a2062;">5</h3>
-                            <p class="mb-0 text-muted small">Borrowed</p>
+                            <h3 class="fw-bold mb-1" style="color: #8a2062;">{{ total_borrowed }}</h3>
+                            <p class="mb-0 text-muted small">Total Borrowed</p>
                         </div>
                     </div>
                     
@@ -96,8 +96,8 @@
                                  style="width: 50px; height: 50px; background-color: #1d386a;">
                                 <i class="fas fa-star text-white"></i>
                             </div>
-                            <h3 class="fw-bold mb-1" style="color: #1d386a;">12</h3>
-                            <p class="mb-0 text-muted small">Reviews</p>
+                            <h3 class="fw-bold mb-1" style="color: #1d386a;">{{ reviews_count }}</h3>
+                            <p class="mb-0 text-muted small">Reviews Written</p>
                         </div>
                     </div>
                     
@@ -108,8 +108,8 @@
                                  style="width: 50px; height: 50px; background-color: #bd974c;">
                                 <i class="fas fa-book-open text-white"></i>
                             </div>
-                            <h3 class="fw-bold mb-1" style="color: #bd974c;">3</h3>
-                            <p class="mb-0 text-muted small">Reading Now</p>
+                            <h3 class="fw-bold mb-1" style="color: #bd974c;">{{ currently_reading }}</h3>
+                            <p class="mb-0 text-muted small">Currently Reading</p>
                         </div>
                     </div>
                     
@@ -120,10 +120,36 @@
                                  style="width: 50px; height: 50px; background-color: #b36c8e;">
                                 <i class="fas fa-heart text-white"></i>
                             </div>
-                            <h3 class="fw-bold mb-1" style="color: #b36c8e;">8</h3>
+                            <h3 class="fw-bold mb-1" style="color: #b36c8e;">{{ wishlist_count }}</h3>
                             <p class="mb-0 text-muted small">Wishlist</p>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Additional Stats -->
+                <div class="mt-4 pt-3 border-top">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h5 class="fw-bold mb-1" style="color: #28a745;">{{ returned_books }}</h5>
+                                <p class="mb-0 text-muted small">Books Returned</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h5 class="fw-bold mb-1" style="color: #dc3545;">{{ overdue_books }}</h5>
+                                <p class="mb-0 text-muted small">Overdue Books</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% if total_late_fees > 0 %}
+                    <div class="mt-3 text-center">
+                        <div class="alert alert-warning py-2 mb-0">
+                            <i class="fas fa-money-bill-wave me-2"></i>
+                            <strong>Total Late Fees:</strong> ${{ total_late_fees }}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -297,6 +323,56 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="card shadow border-0">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, #1d386a 0%, #2a4a8a 100%);">
+                <h4 class="mb-0 text-white"><i class="fas fa-history me-2"></i>Recent Activity</h4>
+            </div>
+            <div class="card-body p-4">
+                {% if recent_borrowings %}
+                <div class="list-group list-group-flush">
+                    {% for borrowing in recent_borrowings %}
+                    <div class="list-group-item border-0 px-0 py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 fw-semibold">{{ borrowing.book.title }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {% if borrowing.status == 'BORROWED' %}
+                                        Borrowed on {{ borrowing.borrowed_date|date:"M d, Y" }}
+                                    {% elif borrowing.status == 'RETURNED' %}
+                                        Returned on {{ borrowing.returned_date|date:"M d, Y" }}
+                                    {% elif borrowing.status == 'OVERDUE' %}
+                                        Overdue since {{ borrowing.due_date|date:"M d, Y" }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div>
+                                <span class="badge 
+                                    {% if borrowing.status == 'BORROWED' %}bg-primary
+                                    {% elif borrowing.status == 'RETURNED' %}bg-success
+                                    {% elif borrowing.status == 'OVERDUE' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ borrowing.status }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted mb-3">No Recent Activity</h5>
+                    <p class="text-muted">Start borrowing books to see your activity here!</p>
+                    <a href="{% url 'book_list' %}" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Browse Books
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

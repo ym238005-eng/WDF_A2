@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+
+{% block title %}My Borrowings - Silent Library{% endblock %}
+
+{% block extra_css %}
+<style>
+    .borrowing-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .borrowing-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .borrowing-card.overdue {
+        border-left-color: #dc3545;
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+    
+    .borrowing-card.returned {
+        border-left-color: #28a745;
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+    
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .book-cover-small {
+        width: 60px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .days-left {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    
+    .days-left.overdue {
+        color: #dc3545;
+    }
+    
+    .days-left.warning {
+        color: #ffc107;
+    }
+    
+    .days-left.good {
+        color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold" style="color: var(--primary-color);">
+            <i class="fas fa-book-reader me-2"></i>My Borrowings
+        </h1>
+        <div class="d-flex gap-2">
+            <a href="{% url 'book_list' %}" class="btn btn-outline-primary">
+                <i class="fas fa-search me-2"></i>Find More Books
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <h2 class="fw-bold mb-1" style="color: var(--primary-color);">{{ active_borrowings|length }}</h2>
+                <p class="text-muted mb-0 small">Currently Reading</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <h2 class="fw-bold mb-1" style="color: #dc3545;">{{ overdue_borrowings|length }}</h2>
+                <p class="text-muted mb-0 small">Overdue</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <h2 class="fw-bold mb-1" style="color: #28a745;">{{ returned_borrowings|length }}</h2>
+                <p class="text-muted mb-0 small">Returned</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <h2 class="fw-bold mb-1" style="color: #ffc107;">${{ total_late_fees }}</h2>
+                <p class="text-muted mb-0 small">Total Late Fees</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Currently Borrowed Books -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+            <h5 class="text-white mb-0">
+                <i class="fas fa-bookmark me-2"></i>Currently Borrowed ({{ active_borrowings|length }})
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if active_borrowings %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Borrowed Date</th>
+                            <th>Due Date</th>
+                            <th>Days Left</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for borrowing in active_borrowings %}
+                        <tr class="{% if borrowing.is_overdue %}table-danger{% endif %}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if borrowing.book.cover_pic %}
+                                        <img src="{{ borrowing.book.cover_pic.url }}" 
+                                             alt="{{ borrowing.book.title }}" 
+                                             class="book-cover-small me-3">
+                                    {% else %}
+                                        <div class="book-cover-small bg-light text-muted d-flex align-items-center justify-content-center me-3">
+                                            <i class="fas fa-book"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong class="d-block">{{ borrowing.book.title }}</strong>
+                                        <small class="text-muted">{{ borrowing.book.author }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ borrowing.borrowed_date|date:"M d, Y" }}</td>
+                            <td>
+                                {{ borrowing.due_date|date:"M d, Y" }}
+                                {% if borrowing.is_overdue %}
+                                <br><small class="text-danger">
+                                    {% widthratio borrowing.days_overdue 1 1 as overdue_days %}
+                                    {{ overdue_days }} day{{ overdue_days|pluralize }} overdue
+                                </small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if borrowing.is_overdue %}
+                                <span class="days-left overdue">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    {% widthratio borrowing.days_overdue 1 1 as overdue_days %}
+                                    {{ overdue_days }} days overdue
+                                </span>
+                                {% else %}
+                                <span class="days-left {% if borrowing.days_left <= 3 %}warning{% else %}good{% endif %}">
+                                    {{ borrowing.days_left }} day{{ borrowing.days_left|pluralize }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group" role="group">
+                                    <button type="button" 
+                                            class="btn btn-sm btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#returnModal{{ borrowing.id }}">
+                                        <i class="fas fa-undo me-1"></i>Return
+                                    </button>
+                                    <a href="{% url 'book_list' %}" 
+                                       class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted mb-3">No Active Borrowings</h5>
+                <p class="text-muted mb-4">You don't have any books borrowed at the moment.</p>
+                <a href="{% url 'book_list' %}" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Browse Books
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Overdue Books -->
+    {% if overdue_borrowings %}
+    <div class="card shadow-sm border-danger mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>Overdue Books ({{ overdue_borrowings|length }})
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning mb-3">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Please return these books immediately to avoid additional late fees.
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Due Date</th>
+                            <th>Days Overdue</th>
+                            <th>Late Fee</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for borrowing in overdue_borrowings %}
+                        <tr>
+                            <td>{{ borrowing.book.title }}</td>
+                            <td class="text-danger">{{ borrowing.due_date|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="badge bg-danger">
+                                    {% widthratio borrowing.days_overdue 1 1 as overdue_days %}
+                                    {{ overdue_days }} day{{ overdue_days|pluralize }}
+                                </span>
+                            </td>
+                            <td class="fw-bold">${{ borrowing.late_fee }}</td>
+                            <td class="text-end">
+                                <button type="button" 
+                                        class="btn btn-sm btn-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#returnModal{{ borrowing.id }}">
+                                    Return Now
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert alert-danger">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        <strong>Total Late Fees:</strong> ${{ total_late_fees }}
+                    </div>
+                    <div>
+                        <small class="text-muted">Late fee: $0.50 per day per book</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Returned Books History -->
+    <div class="card shadow-sm">
+        <div class="card-header" style="background: linear-gradient(135deg, var(--secondary-color) 0%, #2a4a8a 100%);">
+            <h5 class="text-white mb-0">
+                <i class="fas fa-history me-2"></i>Borrowing History ({{ returned_borrowings|length }})
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if returned_borrowings %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Borrowed Date</th>
+                            <th>Returned Date</th>
+                            <th>Status</th>
+                            <th class="text-end">Review</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for borrowing in returned_borrowings %}
+                        <tr>
+                            <td>
+                                <strong>{{ borrowing.book.title }}</strong><br>
+                                <small class="text-muted">{{ borrowing.book.author }}</small>
+                            </td>
+                            <td>{{ borrowing.borrowed_date|date:"M d, Y" }}</td>
+                            <td>{{ borrowing.returned_date|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="badge bg-success">Returned</span>
+                                {% if borrowing.late_fee > 0 %}
+                                <span class="badge bg-warning ms-1">Late Fee: ${{ borrowing.late_fee }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <!-- Check if user has reviewed this book -->
+                                {% if borrowing.book.reviews.all %}
+                                    {% for review in borrowing.book.reviews.all %}
+                                        {% if review.user == request.user %}
+                                            <span class="badge bg-info">Reviewed</span>
+                                        {% else %}
+                                            <a href="{% url 'submit_review' borrowing.book.id %}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-star me-1"></i>Review
+                                            </a>
+                                        {% endif %}
+                                    {% empty %}
+                                        <a href="{% url 'submit_review' borrowing.book.id %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-star me-1"></i>Review
+                                        </a>
+                                    {% endfor %}
+                                {% else %}
+                                    <a href="{% url 'submit_review' borrowing.book.id %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-star me-1"></i>Review
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted mb-3">No Borrowing History</h5>
+                <p class="text-muted">You haven't returned any books yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Return Modals -->
+{% for borrowing in active_borrowings %}
+<div class="modal fade" id="returnModal{{ borrowing.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Return Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to return <strong>"{{ borrowing.book.title }}"</strong>?</p>
+                {% if borrowing.is_overdue %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    This book is overdue. A late fee of <strong>${{ borrowing.late_fee }}</strong> will be applied.
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{% url 'return_book' borrowing.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Confirm Return</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+        new bootstrap.Tooltip(tooltip);
+    });
+});
+</script>
+{% endblock %}

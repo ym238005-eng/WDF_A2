@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Return Book - Silent Library{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+                    <h4 class="mb-0">
+                        <i class="fas fa-undo me-2"></i>Return Book
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            {% if borrowing.book.cover_pic %}
+                                <img src="{{ borrowing.book.cover_pic.url }}" 
+                                     alt="{{ borrowing.book.title }}" 
+                                     class="rounded shadow-sm" 
+                                     style="width: 100px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center rounded border" 
+                                     style="width: 100px; height: 150px; margin: 0 auto; background-color: #f8f9fa;">
+                                    <i class="fas fa-book fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <h3 class="fw-bold" style="color: var(--primary-color);">{{ borrowing.book.title }}</h3>
+                        <p class="text-muted">by {{ borrowing.book.author }}</p>
+                    </div>
+                    
+                    <div class="card border-0 mb-4" style="background-color: #f8f9fa;">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3" style="color: var(--secondary-color);">
+                                <i class="fas fa-history me-2"></i>Borrowing History
+                            </h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar-plus me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Borrowed:</strong> {{ borrowing.borrowed_date|date:"F d, Y" }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar-minus me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Due Date:</strong> {{ borrowing.due_date|date:"F d, Y" }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Days Borrowed:</strong> {{ borrowing.days_borrowed }} days
+                                </li>
+                                {% if borrowing.is_overdue %}
+                                <li class="mb-2">
+                                    <i class="fas fa-exclamation-triangle me-2" style="color: #dc3545;"></i>
+                                    <strong>Status:</strong> 
+                                    <span class="badge bg-danger">OVERDUE</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-money-bill-wave me-2" style="color: #dc3545;"></i>
+                                    <strong>Late Fee:</strong> 
+                                    <span class="text-danger fw-bold">${{ borrowing.calculate_late_fee }}</span>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <i class="fas fa-check-circle me-2" style="color: #28a745;"></i>
+                                    <strong>Status:</strong> 
+                                    <span class="badge bg-success">On Time</span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    {% if borrowing.is_overdue %}
+                    <div class="alert alert-warning alert-custom mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle fa-2x me-3" style="color: #dc3545;"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Overdue Notice</h6>
+                                <p class="mb-0">This book is overdue. Late fees will be applied to your account upon return.</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="alert alert-info alert-custom mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-star fa-2x me-3" style="color: var(--primary-color);"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Review Opportunity</h6>
+                                <p class="mb-0">After returning this book, you'll be able to rate and review it to help other readers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" action="{% url 'return_book' borrowing.id %}">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check-circle me-2"></i>Confirm Return
+                            </button>
+                            <a href="{% url 'my_borrowings' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Calculate days borrowed
+    const borrowedDate = new Date('{{ borrowing.borrowed_date|date:"Y-m-d" }}');
+    const today = new Date();
+    const diffTime = Math.abs(today - borrowedDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    document.querySelectorAll('[data-days-borrowed]').forEach(el => {
+        el.textContent = diffDays;
+    });
+});
+</script>
+{% endblock %}

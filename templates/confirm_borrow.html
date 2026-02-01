@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Borrow Book - Silent Library{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+                    <h4 class="mb-0">
+                        <i class="fas fa-book-reader me-2"></i>Confirm Book Borrowing
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-book fa-4x" style="color: var(--primary-color);"></i>
+                        </div>
+                        <h3 class="fw-bold" style="color: var(--primary-color);">{{ book.title }}</h3>
+                        <p class="text-muted">by {{ book.author }}</p>
+                    </div>
+                    
+                    <div class="card border-0 mb-4" style="background-color: #f8f9fa;">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3" style="color: var(--secondary-color);">
+                                <i class="fas fa-info-circle me-2"></i>Borrowing Details
+                            </h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar-check me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Borrow Date:</strong> {{ today|date:"F d, Y" }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar-times me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Due Date:</strong> {{ due_date|date:"F d, Y" }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>
+                                    <strong>Borrowing Period:</strong> 14 days
+                                </li>
+                                <li>
+                                    <i class="fas fa-exclamation-triangle me-2" style="color: #dc3545;"></i>
+                                    <strong>Late Fee:</strong> $0.50 per day after due date
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info alert-custom mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-bookmark fa-2x me-3" style="color: var(--primary-color);"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Borrowing Rules</h6>
+                                <ul class="mb-0 small">
+                                    <li>Maximum 5 books can be borrowed at a time</li>
+                                    <li>Books must be returned within 14 days</li>
+                                    <li>Late returns incur a fee of $0.50 per day</li>
+                                    <li>You can review books after returning them</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" action="{% url 'borrow_book' book.id %}">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check-circle me-2"></i>Confirm Borrow
+                            </button>
+                            <a href="{% url 'book_list' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set today's date
+    const today = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(today.getDate() + 14);
+    
+    document.querySelectorAll('[data-today]').forEach(el => {
+        el.textContent = today.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    });
+    
+    document.querySelectorAll('[data-due-date]').forEach(el => {
+        el.textContent = dueDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    });
+});
+</script>
+{% endblock %}

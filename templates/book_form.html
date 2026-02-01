@@ -1,19 +1,156 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Book</title>
-</head>
-<body> 
-    <h1>Book Form</h1>
-
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save</button>
-    </form>
-    <a href="{% url 'book_list' %}">Back to Book List</a>
-</body>
-</html>
-
+{% extends "base.html" %}
+ 
+{% block title %}{% if is_update %}Update Book - Silent Library{% else %}Add New Book - Silent Library{% endif %}{% endblock %}
+ 
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <!-- Card Header -->
+                <div class="card-header text-white" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-purple) 100%);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0">
+                                <i class="fas {% if is_update %}fa-edit{% else %}fa-plus-circle{% endif %} me-2"></i>
+                                {% if is_update %}Update Book{% else %}Add New Book{% endif %}
+                            </h4>
+                            <p class="mb-0 opacity-75 small mt-1">
+                                {% if is_update %}Edit "{{ form.instance.title }}"{% else %}Fill in the book details{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- Form -->
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                       
+                        <div class="row g-3">
+                            <!-- Left Column -->
+                            <div class="col-md-6">
+                                <!-- Title -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Title *</label>
+                                    <input type="text" class="form-control" name="title" value="{{ form.title.value|default:'' }}" required>
+                                    {% if form.title.errors %}
+                                    <small class="text-danger">{{ form.title.errors.0 }}</small>
+                                    {% endif %}
+                                </div>
+                               
+                                <!-- Author -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Author *</label>
+                                    <input type="text" class="form-control" name="author" value="{{ form.author.value|default:'' }}" required>
+                                    {% if form.author.errors %}
+                                    <small class="text-danger">{{ form.author.errors.0 }}</small>
+                                    {% endif %}
+                                </div>
+                               
+                                <!-- ISBN -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">ISBN *</label>
+                                    <input type="text" class="form-control" name="isbn" value="{{ form.isbn.value|default:'' }}" required>
+                                    {% if form.isbn.errors %}
+                                    <small class="text-danger">{{ form.isbn.errors.0 }}</small>
+                                    {% endif %}
+                                </div>
+                               
+                                <!-- Category -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Category *</label>
+                                    <input type="text" class="form-control" name="category" value="{{ form.category.value|default:'' }}" required>
+                                    {% if form.category.errors %}
+                                    <small class="text-danger">{{ form.category.errors.0 }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                           
+                            <!-- Right Column -->
+                            <div class="col-md-6">
+                                <!-- Published Date -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Published Date *</label>
+                                    <input type="date" class="form-control" name="published_date" value="{{ form.published_date.value|date:'Y-m-d' }}" required>
+                                    {% if form.published_date.errors %}
+                                    <small class="text-danger">{{ form.published_date.errors.0 }}</small>
+                                    {% endif %}
+                                </div>
+                               
+                                <!-- Available Copies -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Available Copies *</label>
+                                    <input type="number" class="form-control" name="available_copies" value="{{ form.available_copies.value|default:1 }}" min="0" required>
+                                    {% if form.available_copies.errors %}
+                                    <small class="text-danger">{{ form.available_copies.errors.0 }}</small>
+                                    {% endif %}
+                                </div>
+                               
+                                <!-- Cover Image -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Cover Image</label>
+                                   
+                                    {% if form.instance.cover_pic %}
+                                    <div class="mb-2">
+                                        <p class="mb-1">Current Cover:</p>
+                                        <img src="{{ form.instance.cover_pic.url }}" alt="Current cover" class="img-thumbnail" style="max-height: 150px;">
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" name="remove_cover" id="removeCover">
+                                            <label class="form-check-label text-danger" for="removeCover">
+                                                Remove current cover
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                   
+                                    <input type="file" class="form-control" name="cover_pic" accept="image/*">
+                                    {% if form.cover_pic.errors %}
+                                    <small class="text-danger">{{ form.cover_pic.errors.0 }}</small>
+                                    {% endif %}
+                                    <small class="text-muted">Max 5MB. Recommended: 300x450px</small>
+                                </div>
+                            </div>
+                           
+                            <!-- Description (Full Width) -->
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Description *</label>
+                                    <textarea class="form-control" name="description" rows="5" required>{{ form.description.value|default:'' }}</textarea>
+                                    {% if form.description.errors %}
+                                    <small class="text-danger">{{ form.description.errors.0 }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                           
+                            <!-- Form Actions -->
+                            <div class="col-12 mt-4 pt-3 border-top">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas {% if is_update %}fa-save{% else %}fa-plus-circle{% endif %} me-2"></i>
+                                        {% if is_update %}Update Book{% else %}Add Book{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+           
+            <!-- Quick Help -->
+            <div class="alert alert-info mt-3 alert-custom">
+                <div class="d-flex">
+                    <i class="fas fa-info-circle me-2 mt-1"></i>
+                    <div class="small">
+                        <strong>Note:</strong> Fields marked with * are required.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+ 
